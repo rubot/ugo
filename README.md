@@ -15,31 +15,31 @@ BASHPLUGINSFOLDER=path_to_your_bash_plugins_folder # (e.g.:=~/.bash/plugins)
 
 ## Info
 
-usage: ugo [-h] <command>|<project> <options> [-v]
+	usage: ugo [-h] <command>|<project> <options> [-v]
 
-<TAB> expands commands|projects
+	<TAB> expands commands|projects
 
-commands ?(<optional>), options:
- boot <scriptfile> ?<project>
- conf ?(<project>|<list>)
- delete <project>, --all
- help
- info ?(<project>)
- list ?(<project>|<conf>)
- make <project> ?<path> [ boot <scriptfile> ]
- set <project> ?<path>
+	commands ?(<optional>), options:
+	 boot <scriptfile> ?<project>
+	 conf ?(<project>|<list>)
+	 delete <project>, --all
+	 help
+	 info ?(<project>)
+	 list ?(<project>|<conf>)
+	 make <project> ?<path> [ boot <scriptfile> ]
+	 set <project> ?<path>
  
-hooks:
-~/.ugo/_ugo_conf/
- pre-make-hook
- post-make-hook
+	hooks:
+	~/.ugo/_ugo_conf/
+	 pre-make-hook
+	 post-make-hook
  
-~/.ugo/<project>/
- pre-ugo-hook
- post-ugo-hook
- pre-delete-hook [only with delete --all]
- post-delete-hook [only with delete --all]
+	~/.ugo/<project>/
+	 pre-ugo-hook
+	 post-ugo-hook
+	 pre-delete-hook [only with delete --all]
+	 post-delete-hook [only with delete --all]
 
-bootscripts:
-~/.ugo/_ugo_conf/
- boot-<name>
+	bootscripts:
+	~/.ugo/_ugo_conf/
+	 boot-<name>
