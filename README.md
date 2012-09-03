@@ -9,8 +9,8 @@ inspired by workon of virtualenvwrapper
 
 Copy this file to your desired bash plugin location and add this to your .bashrc:
 
-BASHPLUGINSFOLDER=path_to_your_bash_plugins_folder # (e.g.:=~/.bash/plugins)
-[[ -r $BASHPLUGINSFOLDER/ugo.bash ]] && source $BASHPLUGINSFOLDER/ugo.bash
+	BASHPLUGINSFOLDER=path_to_your_bash_plugins_folder # (e.g.:=~/.bash/plugins)
+	[[ -r $BASHPLUGINSFOLDER/ugo.bash ]] && source $BASHPLUGINSFOLDER/ugo.bash
 
 
 ## Info
