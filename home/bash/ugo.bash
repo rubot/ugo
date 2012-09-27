@@ -20,9 +20,10 @@
 #
 [[ $UGO_HOME == "" ]] && UGO_HOME="$HOME/.ugo"
 [[ $UGO_PROFILE == "" ]] && UGO_PROFILE=".profile"
-[[ $UGO_CONFDIR == "" ]] && UGO_CONFDIR="_ugo_conf"
-[[ -d "$UGO_HOME/$UGO_CONFDIR" ]] || mkdir -p "$UGO_HOME/$UGO_CONFDIR"
+[[ $UGO_CONFDIR == "" ]] && UGO_CONFDIR=".ugo"
 [[ $UGO_TRASH == "" ]] && UGO_TRASH=~/.Trash
+[[ -d "$UGO_HOME/$UGO_CONFDIR" ]] || mkdir -p "$UGO_HOME/$UGO_CONFDIR"
+[[ -d "$UGO_HOME/$UGO_TRASH" ]] || mkdir -p "$UGO_HOME/$UGO_TRASH"
 
 UGO_COMMANDS=(boot conf help info list make delete set)
 UGO_DEBUG="0"
@@ -94,9 +95,9 @@ _ugo_list(){
         
         if [[ $filter != "" ]]
             then            
-            ls -lA1 $lspath | xargs -n1 basename | grep $filter
+            ls -l1 $lspath | xargs -n1 basename | grep $filter
         else
-            ls -lA1 $lspath | xargs -n1 basename
+            ls -l1 $lspath | xargs -n1 basename
         fi
                 
         return
@@ -108,7 +109,7 @@ _ugo_list(){
         echo "No projects in $UGO_HOME. Use ugo make."
         return 1
     else 
-        ls -lA1d $UGO_HOME/* | grep -v $UGO_CONFDIR | xargs -n1 basename
+        ls -l1d $UGO_HOME/* | grep -v $UGO_CONFDIR | xargs -n1 basename
     fi
 }
 
