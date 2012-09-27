@@ -22,7 +22,7 @@
 [[ $UGO_PROFILE == "" ]] && UGO_PROFILE=".profile"
 [[ $UGO_CONFDIR == "" ]] && UGO_CONFDIR="_ugo_conf"
 [[ -d "$UGO_HOME/$UGO_CONFDIR" ]] || mkdir -p "$UGO_HOME/$UGO_CONFDIR"
-[[ $UGO_TRASH == "" ]] && UGO_TRASH=$HOME/.Trash
+[[ $UGO_TRASH == "" ]] && UGO_TRASH=~/.Trash
 
 UGO_COMMANDS=(boot conf help info list make delete set)
 UGO_DEBUG="0"
@@ -94,9 +94,9 @@ _ugo_list(){
         
         if [[ $filter != "" ]]
             then            
-            ls -lA1 $lspath | awk '{print $9}' | xargs -n1 basename | grep $filter
+            ls -lA1 $lspath | xargs -n1 basename | grep $filter
         else
-            ls -lA1 $lspath | awk '{print $9}' | xargs -n1 basename
+            ls -lA1 $lspath | xargs -n1 basename
         fi
                 
         return
@@ -108,7 +108,7 @@ _ugo_list(){
         echo "No projects in $UGO_HOME. Use ugo make."
         return 1
     else 
-        ls -lA1d $UGO_HOME/* | grep -v $UGO_CONFDIR | awk '{print $9}' | xargs -n1 basename
+        ls -lA1d $UGO_HOME/* | grep -v $UGO_CONFDIR | xargs -n1 basename
     fi
 }
 
@@ -144,7 +144,7 @@ _ugo_make(){
     fi
     
     local ugo_profile="$ugo_path/$UGO_PROFILE"
-    local cur_dir=$(pwd | sed 's/[ .]//g' | awk '{print $9}' | xargs -n1 basename)
+    local cur_dir=$(pwd | sed 's/[ .]//g' | xargs -n1 basename)
         
     local option=$2
     local option_args=$3
@@ -193,7 +193,7 @@ _ugo_set(){
     local answer
     
     local ugo_setpath=$(pwd)
-    local cur_dir=$(pwd | sed 's/[ .]//g' | awk '{print $9}' | xargs -n1 basename)
+    local cur_dir=$(pwd | sed 's/[ .]//g' | xargs -n1 basename)
     local project="$cur_dir"
         
     [[ "$2" != "" ]] && ugo_setpath="$2"
@@ -322,7 +322,7 @@ _ugo_delete(){
             
             _ugo_run_hook $project 'pre-delete-hook'
             
-            [[ $project == "$(pwd | awk '{print $9}' | xargs -n1 basename)" ]] && cd ..
+            [[ $project == "$(pwd | xargs -n1 basename)" ]] && cd ..
             
             mv $project_dir $dest2
             
@@ -529,7 +529,7 @@ _ugo_boot(){
     fi
         
     local project=$2
-    local cur_dir=$(pwd | sed 's/[ .]//g' | awk '{print $9}' | xargs -n1 basename)    
+    local cur_dir=$(pwd | sed 's/[ .]//g' | xargs -n1 basename)    
     if [[ $project == "" ]]
         then
         project=$cur_dir
@@ -666,7 +666,7 @@ _ugo()
          
          case "$prev" in
             "make") 
-                p_list=$(pwd | sed 's/[ .]//g' | awk '{print $9}' | xargs -n1 basename)
+                p_list=$(pwd | sed 's/[ .]//g' | xargs -n1 basename)
                 COMPREPLY=($(compgen -W "${p_list}" -- ${cur}))                
                 return;;
             "list")
@@ -726,4 +726,4 @@ _ugo()
      fi     
      
 }
-complete -o nospace -F _ugo ugo
+complete -F _ugo ugo g
