@@ -21,8 +21,9 @@
 [[ $UGO_HOME == "" ]] && UGO_HOME="$HOME/.ugo"
 [[ $UGO_PROFILE == "" ]] && UGO_PROFILE=".profile"
 [[ $UGO_CONFDIR == "" ]] && UGO_CONFDIR=".config"
-[[ $UGO_TRASH == "" ]] && UGO_TRASH=~/.Trash
+[[ $UGO_TRASH == "" ]] && UGO_TRASH=$UGO_HOME/.Trash
 [[ -d "$UGO_HOME/$UGO_CONFDIR" ]] || mkdir -p "$UGO_HOME/$UGO_CONFDIR"
+[[ -d "$UGO_TRASH" ]] || mkdir -p "$UGO_TRASH"
 
 UGO_COMMANDS=(boot conf help info list make delete set)
 UGO_DEBUG="0"
