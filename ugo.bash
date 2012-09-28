@@ -145,6 +145,8 @@ _ugo_make(){
     fi
     
     local ugo_profile="$ugo_path/$UGO_PROFILE"
+    
+    
     local cur_dir=$(pwd | sed 's/[ .]//g' | xargs -n1 basename)
         
     local option=$2
@@ -152,6 +154,14 @@ _ugo_make(){
     
     local cmd_set="_ugo_set $project"
     local cmd_option=""
+    
+    if [[ $2 == "--bare" ]]
+        then
+        mkdir $ugo_path
+        $cmd_set
+        return
+    fi
+        
     if [[ "$option" != "" ]]
         then
         case $option in
