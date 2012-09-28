@@ -95,9 +95,9 @@ _ugo_list(){
         
         if [[ $filter != "" ]]
             then            
-            ls -l1 $lspath | xargs -n1 basename | grep $filter
+            ls $lspath | xargs -n1 basename | grep $filter
         else
-            ls -l1 $lspath | xargs -n1 basename
+            ls $lspath | xargs -n1 basename
         fi
                 
         return
@@ -109,7 +109,7 @@ _ugo_list(){
         echo "No projects in $UGO_HOME. Use ugo make."
         return 1
     else 
-        ls -l1d $UGO_HOME/* | grep -v $UGO_CONFDIR | xargs -n1 basename
+        ls -d $UGO_HOME/* | grep -v $UGO_CONFDIR | xargs -n1 basename
     fi
 }
 
