@@ -1,0 +1,6 @@
+#!/bin/bash
+
+_ugo_msg $1 
+_ugo_msg "Get custom Vagrantfile"
+cp ~/.rubot/Vagrantfiles/base_Vagrantfile ./Vagrantfile
+_ugo_msg "done"

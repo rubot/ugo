@@ -648,7 +648,7 @@ _ugo_run_hook() {
 }
 
 #echo some header e.g. in bootscripts
-_ugo_divider(){
+_ugo_msg(){
 
  echo "------"
  echo "$1"
