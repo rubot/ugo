@@ -25,7 +25,7 @@
 [[ -d "$UGO_HOME/$UGO_CONFDIR" ]] || mkdir -p "$UGO_HOME/$UGO_CONFDIR"
 [[ -d "$UGO_TRASH" ]] || mkdir -p "$UGO_TRASH"
 
-UGO_COMMANDS=(boot conf help info list make delete set)
+UGO_COMMANDS=(boot conf help info list make delete set sh)
 UGO_DEBUG="0"
 
 _ugo_help(){
@@ -109,7 +109,7 @@ _ugo_list(){
         echo "No projects in $UGO_HOME. Use ugo make."
         return 1
     else 
-        ls -d $UGO_HOME/* | grep -v $UGO_CONFDIR | xargs -n1 basename
+        ls -d $UGO_HOME/* | grep -v ^$UGO_CONFDIR | xargs -n1 basename
     fi
 }
 
@@ -711,6 +711,7 @@ _ugo()
      if [ $COMP_CWORD == 3 ]
         then
         local preprev="${COMP_WORDS[COMP_CWORD-2]}"
+        
         case $preprev in
              "make")
                 commands="boot"
@@ -718,6 +719,9 @@ _ugo()
              "boot")
                 commands=$(_ugo_list)
                 ;;
+            "sh")
+               commands=$(_ugo_list $prev sh)
+               ;;                
                 *)
                 commands=""
                 ;;
