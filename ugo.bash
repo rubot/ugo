@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# folder bookmarks for terminal. 
+# folder bookmarks for terminal.
 # inspired by workon of virtualenvwrapper
 #
 # Author Ruben Nicolaides
@@ -26,7 +26,7 @@
 [[ -d "$UGO_TRASH" ]] || mkdir -p "$UGO_TRASH"
 
 UGO_COMMANDS=(boot conf help info list make delete set sh)
-UGO_DEBUG="0"
+UGO_DEBUG=0
 
 _ugo_help(){
         cat <<HELO
@@ -43,12 +43,12 @@ commands ?(<optional>), options:
  list ?(<project>|<conf>)
  make <project> ?<path> [ boot <scriptfile> ]
  set <project> ?<path>
- 
+
 hooks:
 $UGO_HOME/$UGO_CONFDIR/
  pre-make-hook
  post-make-hook
- 
+
 $UGO_HOME/<project>/
  pre-ugo-hook
  post-ugo-hook
@@ -70,7 +70,7 @@ _ugo_conf(){
         _ugo_list conf
         return
     fi
-    
+
     local pth=""
     [[ $1 != "" ]] && pth="/$1"
     cd $UGO_HOME$pth
@@ -80,7 +80,7 @@ _ugo_list(){
 
     local project=$1
     local filter=$2
-    
+
     if [[ $project != "" ]]
         then
         local lspath="$UGO_HOME/"
@@ -92,29 +92,29 @@ _ugo_list(){
                 lspath+=$project
                 ;;
         esac
-        
+
         if [[ $filter != "" ]]
-            then            
+            then
             ls $lspath | xargs -n1 basename | grep $filter
         else
             ls $lspath | xargs -n1 basename
         fi
-                
+
         return
     fi
-    
+
     ls -d $UGO_HOME/* | grep -v $UGO_CONFDIR >/dev/null 2>&1
     if [ $? -ne "0" ]
         then
         echo "No projects in $UGO_HOME. Use ugo make."
         return 1
-    else 
+    else
         ls -d $UGO_HOME/* | grep -v ^$UGO_CONFDIR | xargs -n1 basename
     fi
 }
 
 _ugo_make(){
-    
+
     local l
     let l=${#@}
     if [[ $l > 3 ]]
@@ -122,7 +122,7 @@ _ugo_make(){
         echo "Too much args"
         _ugo_help
         return
-    fi    
+    fi
 
     local project="$1"
     if [[ "$project" == "" ]]
@@ -136,32 +136,32 @@ _ugo_make(){
         echo "Project name $project is invalid. Allowed: ^[$allowed]+$."
         return
     fi
-    
+
     local ugo_path="$UGO_HOME/$project"
     if [[ -d "$ugo_path" ]]
         then
         echo "Projects exists. Did nothing. Use set."
         return
     fi
-    
+
     local ugo_profile="$ugo_path/$UGO_PROFILE"
-    
-    
+
+
     local cur_dir=$(pwd | sed 's/[ .]//g' | xargs -n1 basename)
-        
+
     local option=$2
     local option_args=$3
-    
+
     local cmd_set="_ugo_set $project"
     local cmd_option=""
-    
+
     if [[ $2 == "--bare" ]]
         then
         mkdir $ugo_path
         $cmd_set
         return
     fi
-        
+
     if [[ "$option" != "" ]]
         then
         case $option in
@@ -179,7 +179,7 @@ _ugo_make(){
                 else
                     cmd_set+=" $setpath"
                 fi
-                ;;               
+                ;;
         esac
     fi
 
@@ -191,45 +191,45 @@ _ugo_make(){
     fi
 
     mkdir $ugo_path
-    
+
     $cmd_set
-    
+
     [[ $cmd_option != "" ]] && $cmd_option
 
-    _ugo_run_hook "$UGO_CONFDIR" "post-make-hook"            
+    _ugo_run_hook "$UGO_CONFDIR" "post-make-hook"
 }
 
 _ugo_set(){
 
     local answer
-    
+
     local ugo_setpath=$(pwd)
     local cur_dir=$(pwd | sed 's/[ .]//g' | xargs -n1 basename)
     local project="$cur_dir"
-        
+
     [[ "$2" != "" ]] && ugo_setpath="$2"
     [[ "$1" != "" ]] && project="$1"
 
     local ugo_path="$UGO_HOME/$project"
     local ugo_profile="$ugo_path/$UGO_PROFILE"
-    
+
     if [[ "$project" == "$UGO_CONFDIR" ]]
         then
         echo "$project is our configuration directory. Don´t use it as a project."
         return
     fi
-    
+
     if [[ ! -d $ugo_path ]]
         then
         echo "No project: $ugo_path. Use make."
         return
     fi
-    
+
     if [[ -f $ugo_profile ]]
         then
-        
+
         local old_settings=$(cat "$ugo_profile")
-        
+
         echo "Settings in: $ugo_profile"
         echo
         if [[ "$ugo_setpath" == "$old_settings" ]]
@@ -237,7 +237,7 @@ _ugo_set(){
             echo "Already project directory. Doing nothing."
             echo
             return
-        fi        
+        fi
         echo "Old project settings: $old_settings"
         echo "New project settings: $ugo_setpath"
         echo
@@ -252,21 +252,21 @@ _ugo_set(){
         fi
 
         local history="$ugo_profile".history
-        echo $old_settings >> $history        
+        echo $old_settings >> $history
         echo "History of project-settings in $history:"
         echo
-        cat "$history"        
+        cat "$history"
     fi
-    
+
     echo "$ugo_setpath" > "$ugo_profile"
     echo "New project settings in $ugo_profile: $(cat "$ugo_profile")"
-    echo    
+    echo
 }
 
 _ugo_delete(){
-    
+
     local answer
-    
+
     local l
     let l=${#@}
     if [[ $l > 2 ]]
@@ -275,7 +275,7 @@ _ugo_delete(){
         _ugo_help
         return
     fi
-    
+
     local project="$1"
     if [[ "$project" == "" ]]
         then
@@ -313,30 +313,30 @@ _ugo_delete(){
         echo "ugo conf directory $UGO_CONFDIR can´t be deleted."
         return
     fi
-        
+
     local error_not_posible="Löschen nicht möglich. Der Papierkorb enthält das Projekt bereits. Bitte den Papierkorb vorher leeren"
     local dest="$UGO_TRASH/$project"
     local dest1 dest2
     local timestamp="`date +%s`"
-    
+
     if [[ $delete == "--all" ]]
         then
-        
+
         echo
         echo "ACHTUNG! Projekt-Ordner $project_dir wirklich in den Papierkorb verschieben? (Y/N)"
         read answer
         echo
-        
+
         if [[ $answer == "Y" ]]
             then
             dest2=$dest"_projectdir_$timestamp"
-            
+
             _ugo_run_hook $project 'pre-delete-hook'
-            
+
             [[ $project == "$(pwd | xargs -n1 basename)" ]] && cd ..
-            
+
             mv $project_dir $dest2
-            
+
             if [[ $? == "0" ]]
                 then
                 echo "$project_dir nach $dest2 verschoben"
@@ -344,24 +344,24 @@ _ugo_delete(){
                 _ugo_run_hook $project 'post-delete-hook'
             else
                 echo $error_not_posible
-            fi                    
+            fi
         else
             echo "Abbruch. Projekt-Ordner $project_dir nicht gelöscht."
             echo
-            return                        
+            return
         fi
     fi
-    
+
     echo "ugo Projekt $ugo_project wirklich in den Papierkorb verschieben? (Y/N)"
     read answer
     echo
-    
+
     if [[ $answer == "Y" ]]
         then
         dest1=$dest"_ugodir_$timestamp"
         mv $ugo_project $dest1
         if [[ $? == "0" ]]
-            then 
+            then
             echo "$ugo_project nach $dest1 verschoben"
             echo
         else
@@ -371,11 +371,11 @@ _ugo_delete(){
         echo "Abbruch. ugo Projekt $ugo_project nicht gelöscht."
         echo
         return
-    fi    
+    fi
 }
 
 _ugo_info(){
-    
+
     local l
     let l=${#@}
     if [[ $l > 1 ]]
@@ -383,16 +383,16 @@ _ugo_info(){
         echo "Too much args"
         _ugo_help
         return
-    fi    
-    
+    fi
+
     local project=$1
-    
+
     if [[ $project == "" ]]
-        then 
+        then
         echo "ugo manages $(ugo | wc -l) projects"
         return
     fi
-    
+
     local ugo_path="$UGO_HOME/$project"
     local ugo_profile="$ugo_path/$UGO_PROFILE"
 
@@ -401,14 +401,14 @@ _ugo_info(){
         echo "No projectfile: $ugo_profile."
         return
     fi
-    
+
     local project_dir=$(cat "$ugo_profile")
-    
+
     echo "Project settings: $project_dir"
 }
 
 _ugo_ugo(){
-    
+
     local l
     local project=$1
     local ugo_path="$UGO_HOME/$project"
@@ -421,9 +421,9 @@ _ugo_ugo(){
         echo "No projectfile: $ugo_profile."
         return
     fi
-    
+
     local project_dir=$(cat "$ugo_profile")
-    
+
     case $cmd in
         "info")
             echo "Project settings: $project_dir"
@@ -441,27 +441,29 @@ _ugo_ugo(){
             _ugo_set $project $cmd_option
             return
             ;;
-            
+
     esac
-    
+
     if [[ ! -d "$project_dir" ]]
         then
         echo "Project Directory $project_dir does not exist."
         return
     fi
-    
+
     _ugo_run_hook $project 'pre-ugo-hook'
-    
+    _ugo_run_hook "$UGO_CONFDIR" 'pre-ugo-hook' $project
+
     cd "$project_dir"
-    
+
     _ugo_run_hook $project 'post-ugo-hook'
+    _ugo_run_hook "$UGO_CONFDIR" 'post-ugo-hook' $project
 }
 
 ugo(){
 
 
     local args=($(echo ${@:2}))
-    
+
     if [[ ${!#} == "-v" ]]
         then
         UGO_DEBUG="1"
@@ -471,9 +473,9 @@ ugo(){
         UGO_DEBUG="0"
         #echo "DEBUG OFF"
     fi
-    
+
     args=${args[@]}
-    
+
     local i
     local l
     local cmd="$1"
@@ -520,9 +522,9 @@ ugo(){
 }
 
 _ugo_boot(){
-    
+
     local answer
-    
+
     local l
     let l=${#@}
     if [[ $l > 2 ]]
@@ -531,21 +533,21 @@ _ugo_boot(){
         _ugo_help
         return
     fi
-    
+
     local scriptname=$1
     if [[ $scriptname == "" ]]
         then
         echo "Kein Script angegeben"
         return
     fi
-        
+
     local project=$2
-    local cur_dir=$(pwd | sed 's/[ .]//g' | xargs -n1 basename)    
+    local cur_dir=$(pwd | sed 's/[ .]//g' | xargs -n1 basename)
     if [[ $project == "" ]]
         then
         project=$cur_dir
     fi
-    
+
     #problems with regex, so check for in array:(
     local projects=($(_ugo_list))
     local existing="0"
@@ -554,7 +556,7 @@ _ugo_boot(){
     do
         [[ $bla == "$project" ]] && existing="1"
     done
-    
+
     if [[ $existing == "0" ]]
         then
 
@@ -563,7 +565,7 @@ _ugo_boot(){
             echo "Abbruch. Das Projekt gibt es nicht und es entspricht auch nicht dem aktuellen Verzeichnis."
             return
         fi
-        
+
         echo "Projekt $project gibt es nicht als ugo-Projekt. Use make."
         echo "Trotzdem booten? (Y/N) - Angewendet auf aktuelles Verzeichnis: $cur_dir"
         read answer
@@ -577,19 +579,19 @@ _ugo_boot(){
 
     if [[ $scriptname =~ ^boot- ]]
         then
-        
-        local error_message    
+
+        local error_message
         local cmd="_ugo_run_hook $UGO_CONFDIR $scriptname $project"
-        
+
         if [[ "$project" != "$cur_dir" ]]
-            then            
+            then
             ugo $project
             error_message="WARNING. Check settings. Possible project missmatch"
         else
             error_message="Boot finish"
 
         fi
-        
+
         if [ "$(ls -A .)" ]
             then
             echo "ACHTUNG! Projekt-Verzeichnis ist nicht leer."
@@ -607,11 +609,11 @@ _ugo_boot(){
 
         echo
         echo $error_message
-        echo        
-        
+        echo
+
     else
         echo "boot-filename has to start with boot-: $scriptname"
-    fi    
+    fi
 }
 
 # Run the hooks
@@ -624,7 +626,7 @@ _ugo_run_hook() {
     local ugo_path="$UGO_HOME/$project"
     local hook_script="$ugo_path/$scriptname"
 
-    if [[ $project == "$UGO_CONFDIR" ]] && [[ $3 != "" ]]
+    if [[ $project == "$UGO_CONFDIR" ]] && [[ $3 ]]
         then
         project=$3
     fi
@@ -642,7 +644,7 @@ _ugo_run_hook() {
         fi
         echo "Hook result:"
         echo
-        source "$hook_script" $project        
+        source "$hook_script" $project
     fi
     echo
 }
@@ -652,7 +654,7 @@ _ugo_msg(){
 
  echo "------"
  echo "$1"
- echo "------" 
+ echo "------"
 }
 
 # Completion Section
@@ -661,24 +663,24 @@ _ugo()
     local cur="${COMP_WORDS[COMP_CWORD]}"
     local prev="${COMP_WORDS[COMP_CWORD-1]}"
     local ugo_cmds="`echo ${UGO_COMMANDS[@]}`"
-    
-    local projects=$(_ugo_list)    
+
+    local projects=$(_ugo_list)
     local choices="$ugo_cmds $projects"
     local commands
     local p_list
-    
+
     if [ $COMP_CWORD == 1 ]
         then
         COMPREPLY=($(compgen -W "$choices" -- ${cur}))
     fi
-        
+
     if [ $COMP_CWORD == 2 ]
          then
-         
+
          case "$prev" in
-            "make") 
+            "make")
                 p_list=$(pwd | sed 's/[ .]//g' | xargs -n1 basename)
-                COMPREPLY=($(compgen -W "${p_list}" -- ${cur}))                
+                COMPREPLY=($(compgen -W "${p_list}" -- ${cur}))
                 return;;
             "list")
                 projects+=" conf";;
@@ -691,9 +693,9 @@ _ugo()
             "help")
                 return
                 ;;
-                
+
          esac
-         
+
          local i
          for i in $ugo_cmds
          do
@@ -704,14 +706,14 @@ _ugo()
              fi
          done
 
-         commands="conf info delete set"  
+         commands="conf info delete set"
          COMPREPLY=($(compgen -W "${commands}" -- ${cur}))
      fi
-      
+
      if [ $COMP_CWORD == 3 ]
         then
         local preprev="${COMP_WORDS[COMP_CWORD-2]}"
-        
+
         case $preprev in
              "make")
                 commands="boot"
@@ -721,24 +723,24 @@ _ugo()
                 ;;
             "sh")
                commands=$(_ugo_list $prev sh)
-               ;;                
+               ;;
                 *)
                 commands=""
                 ;;
         esac
-        
-        [[ $commands != "" ]] && COMPREPLY=($(compgen -W "${commands}" -- ${cur}))         
+
+        [[ $commands != "" ]] && COMPREPLY=($(compgen -W "${commands}" -- ${cur}))
      fi
 
      if [ $COMP_CWORD == 4 ]
-         then   
+         then
          case "$prev" in
              "boot")
                  local p_list=$(_ugo_list conf boot-)
                  COMPREPLY=($(compgen -W "${p_list}" -- ${cur}))
                  ;;
          esac
-     fi     
-     
+     fi
+
 }
 complete -F _ugo ugo g
