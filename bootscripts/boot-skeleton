@@ -1,0 +1,59 @@
+#!/bin/bash
+
+_ugo_msg "create post-ugo-hook for '$1'"
+echo '
+    local cur_venv=`echo $VIRTUAL_ENV|xargs -n1 basename`
+    if [ "$cur_venv" != "'"$1"'" ]
+        then
+        workon "'"$1"'"
+    fi
+' >> $UGO_HOME/$1/post-ugo-hook
+
+_ugo_msg "chmod a+x $UGO_HOME/$1/post-ugo-hook"
+chmod a+x $UGO_HOME/$1/post-ugo-hook
+
+_ugo_msg "create post-delete-hook for '$1'"
+echo '
+    deactivate
+    [[ $1 == "$(pwd | xargs -n1 basename)" ]] && cd ..
+    echo "virtualenv $1 löschen? (Y/N)"
+    local answer
+    read answer
+    if [[ $answer != "Y" ]]
+        then
+        echo "Abbruch"
+        return
+    fi
+    rmvirtualenv $1
+' >> $UGO_HOME/$1/post-delete-hook
+
+_ugo_msg "chmod a+x $UGO_HOME/$1/post-delete-hook"
+chmod a+x $UGO_HOME/$1/post-delete-hook
+
+_ugo_msg "mkvirtualenv --distribute --no-site-packages $1"
+mkvirtualenv --distribute --no-site-packages $1
+
+_ugo_msg "virtualenv '$1' activated by mkvirtualenv."
+
+_ugo_msg "pip install django"
+pip install django
+
+#_ugo_msg "toggleglobalsitepackages"
+#toggleglobalsitepackages
+
+_ugo_msg "django-admin.py startproject $1"
+django-admin.py startproject $1
+
+_ugo_msg "git init"
+git init
+
+_ugo_msg "Prefill .gitignore"
+echo ".DS_Store" > .gitignore
+
+_ugo_msg "git add ."
+git add .
+
+_ugo_msg "git commit -a -m 'initial commit for $1'"
+git commit -a -m "initial commit for $1"
+
+_ugo_msg "done"

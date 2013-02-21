@@ -45,10 +45,14 @@ commands ?(<optional>), options:
  set <project> ?<path>
 
 hooks:
+--global--
 $UGO_HOME/$UGO_CONFDIR/
  pre-make-hook
  post-make-hook
+ pre-ugo-hook
+ post-ugo-hook
 
+--per project--
 $UGO_HOME/<project>/
  pre-ugo-hook
  post-ugo-hook
