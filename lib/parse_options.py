@@ -1,31 +1,37 @@
 import argparse
 
 from defined_commands import COMMANDS
+from utils import lazy_import
 
 
-def lazy_import(name):
-    components = name.split('.')
-    mod = __import__('.'.join(['lib.commands', components[0]]), fromlist=['commands'])
+def _add_subcommands(cdict, parent, parser):
 
-    for comp in components[1:]:
-        mod = getattr(mod, comp)
-    return mod
+    for _type in cdict:
+        if _type == 'arguments':
+            for arg in list(cdict[_type]):
+                eval("parser.add_argument('%s', %s)" %
+                    (arg, cdict[_type][arg]['parser_args']))
+
+        elif _type == 'subcommands':
+
+            subcommands = {}
+            sname = parent if parent else 'main'
+            subparsers = parser.add_subparsers(title='%s subcommands' % sname, dest='%s_command' % sname)
+
+            for sub in sorted(cdict[_type]):
+                mname = parent if parent else sub
+                subcommands[sub] = subparsers.add_parser(sub)
+
+                func = lazy_import("ugo_%s.ugo_%s" % (mname, sub), 'lib.commands', ['commands'])
+                subcommands[sub].set_defaults(func=func)
+                _add_subcommands(cdict[_type][sub], mname, subcommands[sub])
 
 
 def execute_from_command_line():
+
     parser = argparse.ArgumentParser(description='Commandline bookmarks.')
 
-    parser.add_argument('-v', '--verbose', action='count')
-
-    subparsers = parser.add_subparsers(title='subcommands', dest='command')
-
-    subcommands = {}
-    for key in COMMANDS:
-        subcommands[key] = subparsers.add_parser(key)
-        for arg_name in reversed(list(COMMANDS[key])):
-            eval("subcommands['%s'].add_argument('%s',%s)" % (key, arg_name, COMMANDS[key][arg_name]['args']))
-        func = lazy_import("_%s._%s" % (key, key))
-        subcommands[key].set_defaults(func=func)
+    _add_subcommands(COMMANDS, None, parser)
 
     args = parser.parse_args()
     args.func(args)
