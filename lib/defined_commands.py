@@ -15,14 +15,15 @@ COMMANDS = json.loads("""
                 "file": {
                     "parser_args": "nargs='?'",
                     "path": "BOOTSCRIPT_PATH",
-                    "group": "ordered_selection",
-                    "position": 1
+                    "group": "ordered_selection"
                     },
                 "project": {
                     "parser_args": "nargs='?'",
-                    "group": "ordered_selection",
-                    "position": 2
-                    }
+                    "group": "ordered_selection"
+                    },
+                "zoro": {
+                    "parser_args": ""
+                }
             }
         },
         "conf": {
@@ -45,13 +46,11 @@ COMMANDS = json.loads("""
             "arguments": {
                 "project": {
                     "parser_args": "",
-                    "group": "ordered_selection",
-                    "position": 1
+                    "group": "ordered_selection"
                     },
                 "--all": {
                     "parser_args": "action='store_true'",
-                    "group": "ordered_selection",
-                    "position": 2
+                    "group": "ordered_selection"
                     }
             }
         },
@@ -83,13 +82,11 @@ COMMANDS = json.loads("""
             "arguments": {
                 "project": {
                     "parser_args": "",
-                    "group": "ordered_selection",
-                    "position": 1
+                    "group": "ordered_selection"
                     },
                 "path": {
                     "parser_args": "nargs='?'",
-                    "group": "ordered_selection",
-                    "position": 2
+                    "group": "ordered_selection"
                     }
             }
         },
@@ -97,13 +94,11 @@ COMMANDS = json.loads("""
             "arguments": {
                 "project": {
                     "parser_args": "",
-                    "group": "ordered_selection",
-                    "position": 1
+                    "group": "ordered_selection"
                     },
                 "path": {
                     "parser_args": "nargs='?'",
-                    "group": "ordered_selection",
-                    "position": 2
+                    "group": "ordered_selection"
                     }
             }
         }
