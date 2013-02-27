@@ -14,16 +14,11 @@ COMMANDS = json.loads("""
             "arguments": {
                 "file": {
                     "parser_args": "nargs='?'",
-                    "path": "BOOTSCRIPT_PATH",
-                    "group": "ordered_selection"
+                    "path": "BOOTSCRIPT_PATH"
                     },
                 "project": {
-                    "parser_args": "nargs='?'",
-                    "group": "ordered_selection"
-                    },
-                "zoro": {
-                    "parser_args": ""
-                }
+                    "parser_args": "nargs='?'"
+                    }
             }
         },
         "conf": {
@@ -33,24 +28,21 @@ COMMANDS = json.loads("""
                         "project": {
                             "parser_args": ""
                         }
-                }
-                    },
-                "list": {
-                    "arguments": {
-
                     }
+                },
+                "list": {
+
                 }
             }
         },
         "delete": {
             "arguments": {
                 "project": {
-                    "parser_args": "",
-                    "group": "ordered_selection"
+                    "parser_args": ""
                     },
                 "--all": {
                     "parser_args": "action='store_true'",
-                    "group": "ordered_selection"
+                    "group": "no_order"
                     }
             }
         },
@@ -80,26 +72,25 @@ COMMANDS = json.loads("""
         },
         "make": {
             "arguments": {
-                "project": {
+                "name": {
                     "parser_args": "",
-                    "group": "ordered_selection"
-                    },
-                "path": {
-                    "parser_args": "nargs='?'",
-                    "group": "ordered_selection"
+                    "subslist": {
+                        "list": "gu,fa,fub"
                     }
+                },
+                "--path": {
+                    "parser_args": ""
+                }
             }
         },
         "set": {
             "arguments": {
                 "project": {
-                    "parser_args": "",
-                    "group": "ordered_selection"
-                    },
-                "path": {
-                    "parser_args": "nargs='?'",
-                    "group": "ordered_selection"
-                    }
+                    "parser_args": ""
+                },
+                "--path": {
+                    "parser_args": ""
+                }
             }
         }
     }

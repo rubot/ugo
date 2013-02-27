@@ -2,9 +2,15 @@ import os
 import sys
 
 import settings
-from utils import get_projects
+from utils import get_projects, lazy_import
 
 from defined_commands import COMMANDS
+
+
+def _check_group(group, attributes):
+    if 'group' in attributes and attributes['group'] == group:
+        return True
+    return False
 
 
 def _set_subs(_list):
@@ -27,20 +33,13 @@ def _order_choices(arguments, subcommands, last_argument):
     ordered_arguments = []
 
     for argument, attributes in arguments.items():
-        if 'group' in attributes and attributes['group'] == 'ordered_selection':
-            ordered_arguments.append((argument, attributes))
-        else:
+        if _check_group('no_order', attributes):
             unordered_arguments.append((argument, attributes))
+        else:
+            ordered_arguments.append((argument, attributes))
 
     if ordered_arguments:
-        if last_argument:
-
-            for pos, value in enumerate(ordered_arguments):
-                if value[0] == last_argument:
-                    i = pos + 1
-                    ordered_arguments = ordered_arguments[i:]
-        else:
-            ordered_arguments = [ordered_arguments[0]]
+        ordered_arguments = [ordered_arguments[0]]
 
         unordered_arguments.extend(ordered_arguments)
 
@@ -63,14 +62,27 @@ def _subs(arguments):
 
     for key, value in arguments.items():
         key = str(key)
-        if key == "file":
-            path = value['path']
-            if hasattr(settings, path):
-                path = getattr(settings, path)
-            subslist = os.listdir(path)
+        if not 'subslist' in value:
+            if key == "file":
+                path = value['path']
+                if hasattr(settings, path):
+                    path = getattr(settings, path)
+                subslist = os.listdir(path)
 
-        elif key == "project":
-            subslist = get_projects()
+            elif key == "project":
+                subslist = get_projects()
+
+        elif isinstance(value['subslist'], dict):
+            for k, v in value['subslist'].items():
+                if k == "path":
+                    if hasattr(settings, v):
+                        v = getattr(settings, v)
+                    subslist = os.listdir(v)
+                elif k == "call":
+                    func = lazy_import("%s" % v, 'lib', [''])
+                    subslist = func()
+                elif k == "list":
+                    subslist = v.replace(' ', '').split(',')
 
         if subslist:
             value['subslist'] = subslist

@@ -6,6 +6,7 @@ from lib.utils import list_files
 
 # Executes script
 def ugo_boot(f):
+    print f
     if not f.file:
         list_files(BOOTSCRIPT_PATH)
     else:
