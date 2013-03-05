@@ -1,6 +1,11 @@
 import os
 import re
+
 import settings
+
+
+def get_commands():
+    return lazy_import("commands.COMMANDS", settings.COMMAND_SET, ['commandsets'])
 
 
 def get_files(path):

@@ -5,6 +5,7 @@
 [[ -d "$UGO_HOME/$UGO_CONFDIR" ]] || mkdir -p "$UGO_HOME/$UGO_CONFDIR"
 [[ -d "$UGO_TRASH" ]] || mkdir -p "$UGO_TRASH"
 
+#alias u = "/Users/rubot/.rubot/ugo/ugo.py"
 _ugo_py_completion()
 {
     COMPREPLY=( $( COMP_WORDS="${COMP_WORDS[*]}" \

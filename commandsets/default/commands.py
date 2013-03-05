@@ -1,4 +1,5 @@
 import json
+
 from collections import OrderedDict
 
 
@@ -10,6 +11,34 @@ COMMANDS = json.loads("""
         }
     },
     "subcommands": {
+        "example": {
+            "arguments": {
+                "list": {
+                    "subslist": {
+                        "list": "gu,fa, fub"
+                    }
+
+                },
+                "call": {
+                    "subslist": {
+                        "call": "utils.get_projects"
+                    }
+                },
+                "path_settings": {
+                    "subslist": {
+                        "path": "BOOTSCRIPT_PATH"
+                    }
+                },
+                "path_system": {
+                    "subslist": {
+                        "path": "/Users/rubot/.ugo"
+                    }
+                },
+                "no_order": {
+                    "group": "no_order"
+                }
+            }
+        },
         "boot": {
             "arguments": {
                 "file": {
@@ -26,7 +55,7 @@ COMMANDS = json.loads("""
                 "go": {
                     "arguments": {
                         "project": {
-                            "parser_args": ""
+
                         }
                     }
                 },
@@ -37,9 +66,7 @@ COMMANDS = json.loads("""
         },
         "delete": {
             "arguments": {
-                "project": {
-                    "parser_args": ""
-                    },
+                "project": {},
                 "--all": {
                     "parser_args": "action='store_true'",
                     "group": "no_order"
@@ -48,9 +75,7 @@ COMMANDS = json.loads("""
         },
         "go": {
             "arguments": {
-                "project": {
-                    "parser_args": ""
-                    }
+                "project": {}
             }
         },
         "help": {
@@ -72,25 +97,14 @@ COMMANDS = json.loads("""
         },
         "make": {
             "arguments": {
-                "name": {
-                    "parser_args": "",
-                    "subslist": {
-                        "list": "gu,fa,fub"
-                    }
-                },
-                "--path": {
-                    "parser_args": ""
-                }
+                "name": {},
+                "--path": {}
             }
         },
         "set": {
             "arguments": {
-                "project": {
-                    "parser_args": ""
-                },
-                "--path": {
-                    "parser_args": ""
-                }
+                "project": {},
+                "--path": {}
             }
         }
     }

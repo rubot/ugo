@@ -1,7 +1,10 @@
 import argparse
 
-from defined_commands import COMMANDS
-from utils import lazy_import
+from lib.utils import lazy_import, get_commands
+
+import settings
+
+COMMANDS = get_commands()
 
 
 def _add_subcommands(cdict, parent, parser):
@@ -9,8 +12,12 @@ def _add_subcommands(cdict, parent, parser):
     for _type in cdict:
         if _type == 'arguments':
             for arg in list(cdict[_type]):
+                parser_args = ""
+                if 'parser_args' in cdict[_type][arg]:
+                    parser_args = cdict[_type][arg]['parser_args']
+
                 eval("parser.add_argument('%s', %s)" %
-                    (arg, cdict[_type][arg]['parser_args']))
+                    (arg, parser_args))
 
         elif _type == 'subcommands':
 
@@ -22,7 +29,7 @@ def _add_subcommands(cdict, parent, parser):
                 mname = parent if parent else sub
                 subcommands[sub] = subparsers.add_parser(sub)
 
-                func = lazy_import("ugo_%s.ugo_%s" % (mname, sub), 'lib.commands', ['commands'])
+                func = lazy_import("ugo_%s.ugo_%s" % (mname, sub), settings.COMMAND_SET, [''])
                 subcommands[sub].set_defaults(func=func)
                 _add_subcommands(cdict[_type][sub], mname, subcommands[sub])
 

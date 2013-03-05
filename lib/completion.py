@@ -2,15 +2,14 @@ import os
 import sys
 
 import settings
-from utils import get_projects, lazy_import
 
-from defined_commands import COMMANDS
+from lib.utils import get_projects, lazy_import, get_commands
+
+COMMANDS = get_commands()
 
 
 def _check_group(group, attributes):
-    if 'group' in attributes and attributes['group'] == group:
-        return True
-    return False
+    return 'group' in attributes and attributes['group'] == group
 
 
 def _set_subs(_list):
