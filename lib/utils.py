@@ -1,13 +1,34 @@
 import json
 import os
 import re
-
+import sys
 from collections import OrderedDict
 
 import settings
 
 
-def get_pathlist(current_word):
+def get_cwords():
+    if 'COMP_WORDS' in os.environ:
+        cwords = os.environ['COMP_WORDS'].split()[1:]
+
+        cword = int(os.environ['COMP_CWORD'])
+
+        try:
+            prev = cwords[cword - 2]
+        except IndexError:
+            prev = ''
+
+        try:
+            curr = cwords[cword - 1]
+        except IndexError:
+            curr = ''
+
+        return cwords, prev, curr
+    #sys.exit(1)
+
+
+def get_pathlist():
+    cwords, prev, current_word = get_cwords()
     path = get_dir_basepath(current_word)
     plist = []
     if current_word and os.path.isdir(path):
@@ -43,19 +64,30 @@ def get_possible_project_names():
 
 
 def get_commands():
-    COMMANDS = lazy_import("commands.COMMANDS", settings.COMMAND_SET, ['commandsets'])
 
-    return json.loads("""
+    COMMAND_SET = settings.DEFAULT_COMMAND_SET
+    COMMANDS = lazy_import("commands.COMMANDS", COMMAND_SET, ['commandsets'])
+
+    try:
+        BASE_ARGS = lazy_import("commands.BASE_ARGS", 'commandsets.base', ['commandsets'])
+        BASE_COMMANDS = lazy_import("commands.BASE_COMMANDS", 'commandsets.base', ['commandsets'])
+
+    except:
+        BASE_ARGS = ""
+        BASE_COMMANDS = ""
+
+    DIVIDER = "," if BASE_COMMANDS and COMMANDS else ""
+    ALL_COMMANDS = """
 {
     "arguments": {
-        "-v": {
-            "parser_args": "'--verbose', action='count'"
-        }
+        """+BASE_ARGS+"""
     },
     "subcommands": {
-        """+COMMANDS+"""
+        """+BASE_COMMANDS+DIVIDER+COMMANDS+"""
     }
-}""", object_pairs_hook=OrderedDict)
+}"""
+
+    return json.loads(ALL_COMMANDS, object_pairs_hook=OrderedDict)
 
 
 def get_files(path):
@@ -76,7 +108,7 @@ def lazy_import(name, module, fromlist):
             mod = getattr(mod, comp)
     except:
         print
-        print name, "Missing subcommand."
+        print name, "Missing module."
         print
 
     return mod
@@ -90,3 +122,9 @@ def list_files(path):
 def list_projects():
     for p in get_projects():
         print p
+
+
+def shellquote(s):
+    if s:
+        return s.replace(" ", "_")
+    return ""

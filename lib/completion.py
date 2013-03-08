@@ -1,11 +1,10 @@
 import os
 import sys
 
+import lib.utils as utils
 import settings
 
-from lib.utils import get_projects, lazy_import, get_commands, get_pathlist
-
-COMMANDS = get_commands()
+COMMANDS = utils.get_commands()
 
 
 def _check_group(group, attributes):
@@ -87,7 +86,7 @@ def _subs(arguments):
                 subslist = os.listdir(path)
 
             elif key == "project":
-                subslist = get_projects()
+                subslist = utils.get_projects()
 
         elif isinstance(value['subslist'], dict):
             for k, v in value['subslist'].items():
@@ -96,7 +95,7 @@ def _subs(arguments):
                         v = getattr(settings, v)
                     subslist = os.listdir(v)
                 elif k == "call":
-                    func = lazy_import("%s" % v, 'lib', [''])
+                    func = utils.lazy_import("%s" % v, 'lib', [''])
                     subslist = func()
                 elif k == "list":
                     subslist = v.replace(' ', '').split(',')
@@ -116,11 +115,16 @@ def _opts(current_word, arguments):
         key = str(key)
         if not 'optslist' in value:
             if key == "--path":
-                optslist = get_pathlist(current_word)
+                optslist = utils.get_pathlist(current_word)
         elif isinstance(value['optslist'], dict):
             for k, v in value['optslist'].items():
                 if k == "path":
-                    optslist = get_pathlist(current_word)
+                    optslist = utils.get_pathlist(current_word)
+                elif k == "call":
+                    func = utils.lazy_import("%s" % v, 'lib', [''])
+                    optslist = func()
+                elif k == "list":
+                    optslist = v.replace(' ', '').split(',')
 
         if optslist:
             value['optslist'] = optslist
@@ -162,32 +166,12 @@ def _get_current_choices(clist, cwords, previous_word, current_word):
     return _order_choices(subcommands, arguments, previous_word)
 
 
-def shellquote(s):
-    if s:
-        return s.replace(" ", "_")
-    return ""
-
-
 def autocomplete():
 
-    if 'COMP_WORDS' in os.environ:
+    cwords, prev, curr = utils.get_cwords()
 
-        cwords = os.environ['COMP_WORDS'].split()[1:]
+    choices = _get_current_choices(COMMANDS, cwords, prev, curr)
 
-        cword = int(os.environ['COMP_CWORD'])
+    print ' '.join(filter(lambda x: x.startswith(curr), [utils.shellquote(c) for c in choices]))
 
-        try:
-            curr = cwords[cword - 1]
-        except IndexError:
-            curr = ''
-
-        try:
-            prev = cwords[cword - 2]
-        except IndexError:
-            prev = ''
-
-        choices = _get_current_choices(COMMANDS, cwords, prev, curr)
-
-        print ' '.join(filter(lambda x: x.startswith(curr), [shellquote(c) for c in choices]))
-
-        sys.exit(1)
+    sys.exit(1)

@@ -1,10 +1,7 @@
 import argparse
 
-from lib.utils import lazy_import, get_commands
-
+import lib.utils as utils
 import settings
-
-COMMANDS = get_commands()
 
 
 def _add_subcommands(cdict, parent, parser):
@@ -29,7 +26,7 @@ def _add_subcommands(cdict, parent, parser):
                 mname = parent if parent else sub
                 subcommands[sub] = subparsers.add_parser(sub)
 
-                func = lazy_import("ugo_%s.ugo_%s" % (mname, sub), settings.COMMAND_SET, [''])
+                func = utils.lazy_import("ugo_%s.ugo_%s" % (mname, sub), settings.DEFAULT_COMMAND_SET, [''])
                 subcommands[sub].set_defaults(func=func)
                 _add_subcommands(cdict[_type][sub], mname, subcommands[sub])
 
@@ -38,7 +35,7 @@ def execute_from_command_line():
 
     parser = argparse.ArgumentParser(description='Commandline bookmarks.')
 
-    _add_subcommands(COMMANDS, None, parser)
+    _add_subcommands(utils.get_commands(), None, parser)
 
     args = parser.parse_args()
     args.func(args)
