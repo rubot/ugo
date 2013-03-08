@@ -1,11 +1,37 @@
+import json
 import os
 import re
+
+from collections import OrderedDict
 
 import settings
 
 
+def get_cwd_basename():
+    return os.getcwd().split("/")[-1]
+
+
+def get_possible_project_names():
+    pattern = "^\.|.*\s"
+    possible_project_names = [n for n in os.listdir(os.getcwd()) if os.path.isdir(n) and not re.match(pattern, n)]
+    possible_project_names.append(get_cwd_basename())
+    return possible_project_names
+
+
 def get_commands():
-    return lazy_import("commands.COMMANDS", settings.COMMAND_SET, ['commandsets'])
+    COMMANDS = lazy_import("commands.COMMANDS", settings.COMMAND_SET, ['commandsets'])
+
+    return json.loads("""
+{
+    "arguments": {
+        "-v": {
+            "parser_args": "'--verbose', action='count'"
+        }
+    },
+    "subcommands": {
+        """+COMMANDS+"""
+    }
+}""", object_pairs_hook=OrderedDict)
 
 
 def get_files(path):
