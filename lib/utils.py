@@ -63,6 +63,11 @@ def get_possible_project_names():
     return possible_project_names
 
 
+def get_commandsets():
+    commandsets = os.listdir(settings.COMMAND_SET_PATH)
+    return [c for c in commandsets if not c == "base" and os.path.isdir("%s/%s" % (settings.COMMAND_SET_PATH, c))]
+
+
 def get_commands():
 
     COMMAND_SET = settings.DEFAULT_COMMAND_SET
@@ -87,7 +92,11 @@ def get_commands():
     }
 }"""
 
-    return json.loads(ALL_COMMANDS, object_pairs_hook=OrderedDict)
+    return load_json(ALL_COMMANDS)
+
+
+def load_json(commands):
+    return json.loads(commands, object_pairs_hook=OrderedDict)
 
 
 def get_files(path):

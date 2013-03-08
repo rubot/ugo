@@ -3,6 +3,14 @@ import argparse
 import lib.utils as utils
 import settings
 
+BASE_COMMANDS = utils.lazy_import("commands.BASE_COMMANDS", 'commandsets.base', ['commandsets'])
+BASE_COMMANDS = utils.load_json("{"+BASE_COMMANDS+"}")
+COMMAND_SET = settings.DEFAULT_COMMAND_SET
+
+
+def _load_module(mname, sub, path):
+    return utils.lazy_import("ugo_%s.ugo_%s" % (mname, sub), path, ['commandsets'])
+
 
 def _add_subcommands(cdict, parent, parser):
 
@@ -13,8 +21,7 @@ def _add_subcommands(cdict, parent, parser):
                 if 'parser_args' in cdict[_type][arg]:
                     parser_args = cdict[_type][arg]['parser_args']
 
-                eval("parser.add_argument('%s', %s)" %
-                    (arg, parser_args))
+                eval("parser.add_argument('%s', %s)" % (arg, parser_args))
 
         elif _type == 'subcommands':
 
@@ -26,7 +33,11 @@ def _add_subcommands(cdict, parent, parser):
                 mname = parent if parent else sub
                 subcommands[sub] = subparsers.add_parser(sub)
 
-                func = utils.lazy_import("ugo_%s.ugo_%s" % (mname, sub), settings.DEFAULT_COMMAND_SET, [''])
+                if sub in BASE_COMMANDS:
+                    func = _load_module(mname, sub, 'commandsets.base')
+                else:
+                    func = _load_module(mname, sub, COMMAND_SET)
+
                 subcommands[sub].set_defaults(func=func)
                 _add_subcommands(cdict[_type][sub], mname, subcommands[sub])
 

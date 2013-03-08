@@ -1,5 +1,4 @@
 COMMANDS = """
-
     "example": {
         "arguments": {
             "list": {
