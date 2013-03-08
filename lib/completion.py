@@ -3,7 +3,7 @@ import sys
 
 import settings
 
-from lib.utils import get_projects, lazy_import, get_commands
+from lib.utils import get_projects, lazy_import, get_commands, get_pathlist
 
 COMMANDS = get_commands()
 
@@ -23,18 +23,13 @@ def _set_subs(argument_list, previous_word):
         if 'previous_argument' in current_attributes:
             previous_argument, previous_attributes = current_attributes['previous_argument']
 
-        if previous_argument:
-            if previous_argument == previous_word:
-                if 'optslist' in previous_attributes:
-                    subslist.extend(previous_attributes['optslist'])
-            elif 'subslist' in value[1]:
-                subslist.extend(value[1]['subslist'])
-            else:
-                subslist.append(value[0])
-        elif 'subslist' in value[1]:
-            subslist.extend(value[1]['subslist'])
+        if current_argument == "" or previous_argument and previous_argument == previous_word:
+            if previous_attributes and 'optslist' in previous_attributes:
+                subslist.extend(previous_attributes['optslist'])
+        elif 'subslist' in current_attributes:
+            subslist.extend(current_attributes['subslist'])
         else:
-            subslist.append(value[0])
+            subslist.append(current_argument)
 
     return subslist
 
@@ -59,8 +54,11 @@ def _order_choices(subcommands, arguments, previous_word):
         unordered_arguments.extend([ordered_arguments[0]])
 
     if previous_argument:
-        for a in unordered_arguments:
-            a[1]['previous_argument'] = previous_argument
+        if unordered_arguments:
+            for a in unordered_arguments:
+                a[1]['previous_argument'] = previous_argument
+        else:
+            unordered_arguments.append(('', {'previous_argument': previous_argument}))
 
     choices.extend(_set_subs(unordered_arguments, previous_word))
     choices.extend(subcommands.keys())
@@ -111,17 +109,18 @@ def _subs(arguments):
     return arguments
 
 
-def _opts(w, arguments):
+def _opts(current_word, arguments):
     optslist = None
 
     for key, value in arguments.items():
         key = str(key)
         if not 'optslist' in value:
             if key == "--path":
-                optslist = ['opa1', 'opu2']
+                optslist = get_pathlist(current_word)
         elif isinstance(value['optslist'], dict):
             for k, v in value['optslist'].items():
-                pass
+                if k == "path":
+                    optslist = get_pathlist(current_word)
 
         if optslist:
             value['optslist'] = optslist
@@ -131,20 +130,20 @@ def _opts(w, arguments):
     return arguments
 
 
-def _find_subs_and_opts(w, arguments):
+def _find_subs_and_opts(arguments, cword, current_word):
 
     arguments = _subs(arguments)
 
     # If current word in subslist, delete argument
     for k, v in arguments.items():
         if 'subslist' in v:
-            if w in v['subslist']:
+            if cword in v['subslist']:
                 del arguments[k]
 
-    return _opts(w, arguments)
+    return _opts(current_word, arguments)
 
 
-def _get_current_choices(clist, cwords, previous_word):
+def _get_current_choices(clist, cwords, previous_word, current_word):
 
     arguments = _get_arguments(clist)
     subcommands = _get_subcommands(clist)
@@ -155,12 +154,18 @@ def _get_current_choices(clist, cwords, previous_word):
             del arguments[w]
         elif w in subcommands:
             arguments = _get_arguments(subcommands[w])
-            arguments = _find_subs_and_opts(w, arguments)
+            arguments = _find_subs_and_opts(arguments, w, current_word)
             subcommands = _get_subcommands(subcommands[w])
         else:
-            arguments = _find_subs_and_opts(w, arguments)
+            arguments = _find_subs_and_opts(arguments, w, current_word)
 
     return _order_choices(subcommands, arguments, previous_word)
+
+
+def shellquote(s):
+    if s:
+        return s.replace(" ", "_")
+    return ""
 
 
 def autocomplete():
@@ -181,8 +186,8 @@ def autocomplete():
         except IndexError:
             prev = ''
 
-        choices = _get_current_choices(COMMANDS, cwords, prev)
+        choices = _get_current_choices(COMMANDS, cwords, prev, curr)
 
-        print ' '.join(filter(lambda x: x.startswith(curr), choices))
+        print ' '.join(filter(lambda x: x.startswith(curr), [shellquote(c) for c in choices]))
 
         sys.exit(1)

@@ -86,12 +86,12 @@ COMMANDS = """
     },
     "make": {
         "arguments": {
-            "--path": {},
             "name": {
                 "subslist": {
                     "call": "utils.get_possible_project_names"
                 }
-            }
+            },
+            "--path": {}
 
         }
     },

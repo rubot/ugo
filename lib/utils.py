@@ -7,8 +7,32 @@ from collections import OrderedDict
 import settings
 
 
+def get_pathlist(current_word):
+    path = get_dir_basepath(current_word)
+    plist = []
+    if current_word and os.path.isdir(path):
+        if path[-1] != "/":
+            path = "%s/" % path
+        plist = ["%s%s" % (path, f) for f in get_files(path)]
+    else:
+        plist = get_files(os.getcwd())
+    return [p for p in plist if os.path.isdir(p)]
+
+
 def get_cwd_basename():
-    return os.getcwd().split("/")[-1]
+    return get_dir_basename(os.getcwd())
+
+
+def get_dir_basename(_dir):
+    return os.path.basename(_dir)
+
+
+def get_dir_basepath(_dir):
+    if _dir == "/":
+        _dir = ""
+    if os.path.exists("%s/" % _dir):
+        return os.path.dirname("%s/" % _dir)
+    return os.path.dirname(_dir)
 
 
 def get_possible_project_names():
