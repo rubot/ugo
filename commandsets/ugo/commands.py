@@ -29,7 +29,7 @@ COMMANDS = """
             "project": {},
             "--all": {
                 "parser_args": "action='store_true'",
-                "group": "no_order"
+                "groups": "no_order"
                 }
         }
     },
@@ -71,4 +71,13 @@ COMMANDS = """
             "project": {},
             "--path": {}
         }
-    }"""
+    },
+    "tag": {
+        "arguments": {
+            "project": {
+                "groups": "endless",
+                "filter": "by_tag"
+            }
+        }
+    }
+    """

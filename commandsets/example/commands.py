@@ -28,7 +28,7 @@ COMMANDS = """
                 }
             },
             "no_order": {
-                "group": "no_order"
+                "groups": "no_order"
             }
         }
 

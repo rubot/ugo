@@ -1,3 +1,4 @@
+import ConfigParser
 import json
 import os
 import re
@@ -5,6 +6,19 @@ import sys
 from collections import OrderedDict
 
 import settings
+
+
+def write_config(config):
+    with open(settings.CONFIG_FILE, 'w') as configfile:
+        config.write(configfile)
+
+
+def read_config():
+
+    config = ConfigParser.ConfigParser()
+    config.read(settings.CONFIG_FILE)
+
+    return config
 
 
 def get_cwords():
@@ -70,7 +84,12 @@ def get_commandsets():
 
 def get_commands():
 
+    config = read_config()
     COMMAND_SET = settings.DEFAULT_COMMAND_SET
+    CS = config.get('DEFAULT', 'bla')
+    # if CS:
+    #     COMMAND_SET = CS
+
     COMMANDS = lazy_import("commands.COMMANDS", COMMAND_SET, ['commandsets'])
 
     try:

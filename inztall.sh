@@ -5,6 +5,12 @@ BIN_PATH="/usr/local/bin"
 if [[ ! $1 ]]
 then
   echo "No file to inztall."
+  echo
+  echo "Usage: inztall <path> <name>"
+  echo
+  echo "inztalls path to $BIN_PATH"
+  echo "name is optional"
+  echo "inztall can inztall itself"
   exit
 fi
 

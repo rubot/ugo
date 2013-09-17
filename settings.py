@@ -6,4 +6,5 @@ COMMAND_SET_PATH = "%s/commandsets" % PROJECT_PATH
 UGO_PATH = "%s/%s" % (os.getenv('HOME'), '.ugo')
 UGO_PROFILE = ".profile"
 
+CONFIG_FILE = "%s/.config.ini" % UGO_PATH
 DEFAULT_COMMAND_SET = "commandsets.ugo"

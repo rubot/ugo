@@ -8,7 +8,7 @@ COMMANDS = utils.get_commands()
 
 
 def _check_group(group, attributes):
-    return 'group' in attributes and attributes['group'] == group
+    return 'groups' in attributes and group in attributes['groups'].replace(' ', '').split(',')
 
 
 def _set_subs(argument_list, previous_word):
@@ -134,15 +134,32 @@ def _opts(current_word, arguments):
     return arguments
 
 
+def _filter_subs(arg, _filter):
+    if _filter == "by_tag":
+        arg["subslist"] = filter(lambda x: x.startswith("r"), arg["subslist"])
+
+    return arg
+
+
+def _process_subs(arguments, v, k):
+    if _check_group('endless', v):
+        if "filter" in v:
+            arguments[k] = _filter_subs(arguments[k], v["filter"])
+    else:
+        del arguments[k]
+
+    return arguments
+
+
 def _find_subs_and_opts(arguments, cword, current_word):
 
     arguments = _subs(arguments)
 
-    # If current word in subslist, delete argument
+    # If current word in subslist, delete or filter argument
     for k, v in arguments.items():
         if 'subslist' in v:
             if cword in v['subslist']:
-                del arguments[k]
+                arguments = _process_subs(arguments, v, k)
 
     return _opts(current_word, arguments)
 

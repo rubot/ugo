@@ -33,7 +33,10 @@ def _add_subcommands(cdict, parent, parser):
                 mname = parent if parent else sub
                 subcommands[sub] = subparsers.add_parser(sub)
 
-                if sub in BASE_COMMANDS:
+                # TODO Make this more obvious.
+                bc = [c for c in BASE_COMMANDS]
+                sbc = [BASE_COMMANDS[s]['subcommands'] for s in bc]
+                if sub in bc or [sc for sc in sbc if sub in sc]:
                     func = _load_module(mname, sub, 'commandsets.base')
                 else:
                     func = _load_module(mname, sub, COMMAND_SET)
@@ -49,4 +52,5 @@ def execute_from_command_line():
     _add_subcommands(utils.get_commands(), None, parser)
 
     args = parser.parse_args()
+
     args.func(args)
