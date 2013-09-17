@@ -1,6 +1,6 @@
 BASE_ARGS = """
     "-v": {
-        "parser_args": "'--verbose', action='count'"
+        "argparse_argument_args": "'--verbose', action='count'"
     }
 """
 
@@ -9,25 +9,26 @@ BASE_COMMANDS = """
         "subcommands": {
             "commandset": {
                 "arguments": {
-                    "optslist": {
-                        "call": "utils.get_commandsets",
-                        "parser_args": "nargs='?'"
+                    "set": {
+                        "substitutes": {
+                            "call": "utils.get_commandsets"
+                        }
                     }
                 }
             },
             "virtualenv": {
                 "arguments": {
-                    "optslist": {
+                    "options": {
                         "call": "utils.get_commandsets",
-                        "parser_args": "nargs='?'"
+                        "argparse_argument_args": "nargs='?'"
                     }
                 }
             },
             "gemset": {
                 "arguments": {
-                    "optslist": {
+                    "options": {
                         "call": "utils.get_commandsets",
-                        "parser_args": "nargs='?'"
+                        "argparse_argument_args": "nargs='?'"
                     }
                 }
             }

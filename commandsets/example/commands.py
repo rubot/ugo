@@ -2,28 +2,28 @@ COMMANDS = """
     "example": {
         "arguments": {
             "list": {
-                "subslist": {
+                "substitutes": {
                     "list": "gu,fa, fub"
                 }
 
             },
             "call": {
-                "subslist": {
+                "substitutes": {
                     "call": "utils.get_projects"
                 }
             },
             "path_settings": {
-                "subslist": {
+                "substitutes": {
                     "path": "BOOTSCRIPT_PATH"
                 }
             },
             "path_system": {
-                "subslist": {
+                "substitutes": {
                     "path": "/Users/rubot/.ugo"
                 }
             },
             "--opts": {
-                "optslist": {
+                "options": {
                     "call": "utils.get_pathlist"
                 }
             },

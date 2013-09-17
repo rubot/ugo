@@ -1,24 +1,58 @@
-import ConfigParser
 import json
 import os
 import re
-import sys
+import ConfigParser
+
 from collections import OrderedDict
+
 
 import settings
 
 
-def write_config(config):
-    with open(settings.CONFIG_FILE, 'w') as configfile:
-        config.write(configfile)
-
-
-def read_config():
-
+def get_active_commandset():
     config = ConfigParser.ConfigParser()
     config.read(settings.CONFIG_FILE)
 
-    return config
+    CS = config.get('SESSION', 'COMMAND_SET')
+
+    if CS:
+        return 'commandsets.%s' % CS
+
+    return 'commandsets.%s' % settings.DEFAULT_COMMAND_SET
+
+
+def lazy_import(name, module, fromlist):
+    components = name.split('.')
+    mod = None
+    try:
+        mod = __import__('.'.join([module, components[0]]), fromlist=fromlist)
+
+        for comp in components[1:]:
+            mod = getattr(mod, comp)
+    except:
+        print
+        print name, "Missing module."
+        print
+
+    return mod
+
+
+def load_json(commands):
+    return json.loads(commands, object_pairs_hook=OrderedDict)
+
+
+BASE_ARGS = lazy_import("commands.BASE_ARGS", 'commandsets.base', ['commandsets'])
+BASE_COMMANDS = lazy_import("commands.BASE_COMMANDS", 'commandsets.base', ['commandsets'])
+BASE_COMMANDS_DICT = load_json("{"+BASE_COMMANDS+"}")
+
+COMMAND_SET = get_active_commandset()
+
+COMMANDS = lazy_import("commands.COMMANDS", COMMAND_SET, ['commandsets'])
+
+
+def write_config(config):
+    with open(settings.CONFIG_FILE, 'wb') as configfile:
+        config.write(configfile)
 
 
 def get_cwords():
@@ -84,22 +118,6 @@ def get_commandsets():
 
 def get_commands():
 
-    config = read_config()
-    COMMAND_SET = settings.DEFAULT_COMMAND_SET
-    CS = config.get('DEFAULT', 'bla')
-    # if CS:
-    #     COMMAND_SET = CS
-
-    COMMANDS = lazy_import("commands.COMMANDS", COMMAND_SET, ['commandsets'])
-
-    try:
-        BASE_ARGS = lazy_import("commands.BASE_ARGS", 'commandsets.base', ['commandsets'])
-        BASE_COMMANDS = lazy_import("commands.BASE_COMMANDS", 'commandsets.base', ['commandsets'])
-
-    except:
-        BASE_ARGS = ""
-        BASE_COMMANDS = ""
-
     DIVIDER = "," if BASE_COMMANDS and COMMANDS else ""
     ALL_COMMANDS = """
 {
@@ -114,32 +132,12 @@ def get_commands():
     return load_json(ALL_COMMANDS)
 
 
-def load_json(commands):
-    return json.loads(commands, object_pairs_hook=OrderedDict)
-
-
 def get_files(path):
     return os.listdir(path)
 
 
 def get_projects():
     return filter(lambda x: not re.match("^\.", x), get_files(settings.UGO_PATH))
-
-
-def lazy_import(name, module, fromlist):
-    components = name.split('.')
-    mod = None
-    try:
-        mod = __import__('.'.join([module, components[0]]), fromlist=fromlist)
-
-        for comp in components[1:]:
-            mod = getattr(mod, comp)
-    except:
-        print
-        print name, "Missing module."
-        print
-
-    return mod
 
 
 def list_files(path):

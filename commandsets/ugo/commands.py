@@ -2,12 +2,16 @@ COMMANDS = """
     "boot": {
         "arguments": {
             "file": {
-                "parser_args": "nargs='?'",
-                "path": "BOOTSCRIPT_PATH"
-                },
-            "project": {
-                "parser_args": "nargs='?'"
+                "substitutes": {
+                    "argparse_argument_args": "nargs='?'",
+                    "path": "BOOTSCRIPT_PATH"
                 }
+            },
+            "project": {
+                "options": {
+                    "argparse_argument_args": "nargs='?'"
+                }
+            }
         }
     },
     "conf": {
@@ -28,7 +32,7 @@ COMMANDS = """
         "arguments": {
             "project": {},
             "--all": {
-                "parser_args": "action='store_true'",
+                "argparse_argument_args": "action='store_true'",
                 "groups": "no_order"
                 }
         }
@@ -44,21 +48,21 @@ COMMANDS = """
     "info": {
         "arguments": {
             "project": {
-                "parser_args": "nargs='?'"
+                "argparse_argument_args": "nargs='?'"
             }
         }
     },
     "list": {
         "arguments": {
             "project": {
-                "parser_args": "nargs='?'"
+                "argparse_argument_args": "nargs='?'"
             }
         }
     },
     "make": {
         "arguments": {
             "name": {
-                "subslist": {
+                "substitutes": {
                     "call": "utils.get_possible_project_names"
                 }
             },

@@ -1,15 +1,10 @@
 import argparse
 
-import lib.utils as utils
-import settings
-
-BASE_COMMANDS = utils.lazy_import("commands.BASE_COMMANDS", 'commandsets.base', ['commandsets'])
-BASE_COMMANDS = utils.load_json("{"+BASE_COMMANDS+"}")
-COMMAND_SET = settings.DEFAULT_COMMAND_SET
+from lib.utils import BASE_COMMANDS_DICT, COMMAND_SET, lazy_import, get_commands
 
 
 def _load_module(mname, sub, path):
-    return utils.lazy_import("ugo_%s.ugo_%s" % (mname, sub), path, ['commandsets'])
+    return lazy_import("ugo_%s.ugo_%s" % (mname, sub), path, ['commandsets'])
 
 
 def _add_subcommands(cdict, parent, parser):
@@ -17,11 +12,11 @@ def _add_subcommands(cdict, parent, parser):
     for _type in cdict:
         if _type == 'arguments':
             for arg in list(cdict[_type]):
-                parser_args = ""
-                if 'parser_args' in cdict[_type][arg]:
-                    parser_args = cdict[_type][arg]['parser_args']
+                argparse_argument_args = ""
+                if 'argparse_argument_args' in cdict[_type][arg]:
+                    argparse_argument_args = cdict[_type][arg]['argparse_argument_args']
 
-                eval("parser.add_argument('%s', %s)" % (arg, parser_args))
+                eval("parser.add_argument('%s', %s)" % (arg, argparse_argument_args))
 
         elif _type == 'subcommands':
 
@@ -34,8 +29,8 @@ def _add_subcommands(cdict, parent, parser):
                 subcommands[sub] = subparsers.add_parser(sub)
 
                 # TODO Make this more obvious.
-                bc = [c for c in BASE_COMMANDS]
-                sbc = [BASE_COMMANDS[s]['subcommands'] for s in bc]
+                bc = [c for c in BASE_COMMANDS_DICT]
+                sbc = [BASE_COMMANDS_DICT[s]['subcommands'] for s in bc]
                 if sub in bc or [sc for sc in sbc if sub in sc]:
                     func = _load_module(mname, sub, 'commandsets.base')
                 else:
@@ -49,7 +44,7 @@ def execute_from_command_line():
 
     parser = argparse.ArgumentParser(description='Commandline bookmarks.')
 
-    _add_subcommands(utils.get_commands(), None, parser)
+    _add_subcommands(get_commands(), None, parser)
 
     args = parser.parse_args()
 

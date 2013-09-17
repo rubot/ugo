@@ -4,8 +4,6 @@ import sys
 import lib.utils as utils
 import settings
 
-COMMANDS = utils.get_commands()
-
 
 def _check_group(group, attributes):
     return 'groups' in attributes and group in attributes['groups'].replace(' ', '').split(',')
@@ -13,7 +11,7 @@ def _check_group(group, attributes):
 
 def _set_subs(argument_list, previous_word):
 
-    subslist = []
+    substitutes = []
 
     for pos, value in enumerate(argument_list):
 
@@ -23,14 +21,14 @@ def _set_subs(argument_list, previous_word):
             previous_argument, previous_attributes = current_attributes['previous_argument']
 
         if current_argument == "" or previous_argument and previous_argument == previous_word:
-            if previous_attributes and 'optslist' in previous_attributes:
-                subslist.extend(previous_attributes['optslist'])
-        elif 'subslist' in current_attributes:
-            subslist.extend(current_attributes['subslist'])
+            if previous_attributes and 'options' in previous_attributes:
+                substitutes.extend(previous_attributes['options'])
+        elif 'substitutes' in current_attributes:
+            substitutes.extend(current_attributes['substitutes'])
         else:
-            subslist.append(current_argument)
+            substitutes.append(current_argument)
 
-    return subslist
+    return substitutes
 
 
 def _order_choices(subcommands, arguments, previous_word):
@@ -74,69 +72,69 @@ def _get_subcommands(clist):
 
 
 def _subs(arguments):
-    subslist = None
+    substitutes = None
 
     for key, value in arguments.items():
         key = str(key)
-        if not 'subslist' in value:
+        if not 'substitutes' in value:
             if key == "file":
                 path = value['path']
                 if hasattr(settings, path):
                     path = getattr(settings, path)
-                subslist = os.listdir(path)
+                substitutes = os.listdir(path)
 
             elif key == "project":
-                subslist = utils.get_projects()
+                substitutes = utils.get_projects()
 
-        elif isinstance(value['subslist'], dict):
-            for k, v in value['subslist'].items():
+        elif isinstance(value['substitutes'], dict):
+            for k, v in value['substitutes'].items():
                 if k == "path":
                     if hasattr(settings, v):
                         v = getattr(settings, v)
-                    subslist = os.listdir(v)
+                    substitutes = os.listdir(v)
                 elif k == "call":
                     func = utils.lazy_import("%s" % v, 'lib', [''])
-                    subslist = func()
+                    substitutes = func()
                 elif k == "list":
-                    subslist = v.replace(' ', '').split(',')
+                    substitutes = v.replace(' ', '').split(',')
 
-        if subslist:
-            value['subslist'] = subslist
+        if substitutes:
+            value['substitutes'] = substitutes
             arguments[key] = value
-            subslist = None
+            substitutes = None
 
     return arguments
 
 
 def _opts(current_word, arguments):
-    optslist = None
+    options = None
 
     for key, value in arguments.items():
         key = str(key)
-        if not 'optslist' in value:
+        if not 'options' in value:
             if key == "--path":
-                optslist = utils.get_pathlist(current_word)
-        elif isinstance(value['optslist'], dict):
-            for k, v in value['optslist'].items():
+                options = utils.get_pathlist(current_word)
+        elif isinstance(value['options'], dict):
+            for k, v in value['options'].items():
                 if k == "path":
-                    optslist = utils.get_pathlist(current_word)
+                    options = utils.get_pathlist(current_word)
                 elif k == "call":
                     func = utils.lazy_import("%s" % v, 'lib', [''])
-                    optslist = func()
+                    options = func()
                 elif k == "list":
-                    optslist = v.replace(' ', '').split(',')
+                    options = v.replace(' ', '').split(',')
 
-        if optslist:
-            value['optslist'] = optslist
+        if options:
+            value['options'] = options
             arguments[key] = value
-            optslist = None
+            options = None
 
     return arguments
 
 
 def _filter_subs(arg, _filter):
     if _filter == "by_tag":
-        arg["subslist"] = filter(lambda x: x.startswith("r"), arg["subslist"])
+        arg["substitutes"] = filter(lambda x: x.startswith("r"), arg["substitutes"])
 
     return arg
 
@@ -155,10 +153,10 @@ def _find_subs_and_opts(arguments, cword, current_word):
 
     arguments = _subs(arguments)
 
-    # If current word in subslist, delete or filter argument
+    # If current word in substitutes, delete or filter argument
     for k, v in arguments.items():
-        if 'subslist' in v:
-            if cword in v['subslist']:
+        if 'substitutes' in v:
+            if cword in v['substitutes']:
                 arguments = _process_subs(arguments, v, k)
 
     return _opts(current_word, arguments)
@@ -187,7 +185,7 @@ def autocomplete():
 
     cwords, prev, curr = utils.get_cwords()
 
-    choices = _get_current_choices(COMMANDS, cwords, prev, curr)
+    choices = _get_current_choices(utils.get_commands(), cwords, prev, curr)
 
     print ' '.join(filter(lambda x: x.startswith(curr), [utils.shellquote(c) for c in choices]))
 
