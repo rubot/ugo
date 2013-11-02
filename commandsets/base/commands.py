@@ -6,31 +6,24 @@ BASE_ARGS = """
 
 BASE_COMMANDS = """
     "use": {
-        "subcommands": {
+        "arguments": {
             "commandset": {
-                "arguments": {
-                    "set": {
-                        "substitutes": {
-                            "call": "utils.get_commandsets"
-                        }
-                    }
-                }
+                "options": {
+                    "call": "utils.get_commandsets"
+                },
+                "argparse_argument_args": "nargs='?'"
             },
             "virtualenv": {
-                "arguments": {
-                    "options": {
-                        "call": "utils.get_commandsets",
-                        "argparse_argument_args": "nargs='?'"
-                    }
-                }
+                "options": {
+                    "call": "utils.get_commandsets"
+                },
+                "argparse_argument_args": "nargs='?'"
             },
             "gemset": {
-                "arguments": {
-                    "options": {
-                        "call": "utils.get_commandsets",
-                        "argparse_argument_args": "nargs='?'"
-                    }
-                }
+                "options": {
+                    "call": "utils.get_commandsets"
+                },
+                "argparse_argument_args": "nargs='?'"
             }
         }
     }"""

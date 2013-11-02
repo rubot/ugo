@@ -30,7 +30,7 @@ def _add_subcommands(cdict, parent, parser):
 
                 # TODO Make this more obvious.
                 bc = [c for c in BASE_COMMANDS_DICT]
-                sbc = [BASE_COMMANDS_DICT[s]['subcommands'] for s in bc]
+                sbc = [BASE_COMMANDS_DICT[s] for s in bc]
                 if sub in bc or [sc for sc in sbc if sub in sc]:
                     func = _load_module(mname, sub, 'commandsets.base')
                 else:
