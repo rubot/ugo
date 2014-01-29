@@ -1,3 +1,4 @@
+COMMAND_SET_DESCRIPTION = 'Commandline bookmarks from hell.'
 COMMANDS = """
     "boot": {
         "arguments": {
@@ -19,12 +20,12 @@ COMMANDS = """
             "go": {
                 "arguments": {
                     "project": {
-
+                        "argparse_argument_args": "nargs='?'"
                     }
                 }
             },
             "list": {
-
+                "argparse_argument_args": "nargs='?'"
             }
         }
     },

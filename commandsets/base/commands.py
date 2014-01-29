@@ -4,26 +4,32 @@ BASE_ARGS = """
     }
 """
 
+
 BASE_COMMANDS = """
+    "argparse_subparser_args": "help='base commands'",
     "use": {
         "arguments": {
-            "commandset": {
-                "options": {
-                    "call": "utils.get_commandsets"
+            "set": {
+                "substitutes": {
+                    "list": "commandset,virtualenv,gemset"
                 },
-                "argparse_argument_args": "nargs='?'"
+                "argparse_argument_args": "help='set a set'"
             },
-            "virtualenv": {
-                "options": {
-                    "call": "utils.get_commandsets"
-                },
-                "argparse_argument_args": "nargs='?'"
-            },
-            "gemset": {
-                "options": {
-                    "call": "utils.get_commandsets"
-                },
-                "argparse_argument_args": "nargs='?'"
+            "name": {
+                "substitutes": {
+                    "call": "utils.get_setlist"
+                }
             }
-        }
+        },
+        "argparse_subcommand_args": "help='choose a set to use'"
+    },
+    "which": {
+        "arguments": {
+            "set": {
+                "substitutes": {
+                    "list": "commandset,virtualenv,gemset"
+                }
+            }
+        },
+        "argparse_subcommand_args": "help='show which set is in use'"
     }"""

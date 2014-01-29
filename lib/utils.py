@@ -11,17 +11,17 @@ import settings
 
 def get_active_commandset():
     config = ConfigParser.ConfigParser()
-    config.read(settings.CONFIG_FILE)
 
-    CS = config.get('SESSION', 'COMMAND_SET')
+    if config.read(settings.CONFIG_FILE):
+        CS = config.get('SESSION', 'COMMAND_SET')
 
-    if CS:
-        return 'commandsets.%s' % CS
+        if CS:
+            return 'commandsets.%s' % CS
 
     return 'commandsets.%s' % settings.DEFAULT_COMMAND_SET
 
 
-def lazy_import(name, module, fromlist):
+def lazy_import(name, module, fromlist, quiet=False):
     components = name.split('.')
     mod = None
     try:
@@ -29,9 +29,17 @@ def lazy_import(name, module, fromlist):
 
         for comp in components[1:]:
             mod = getattr(mod, comp)
-    except:
+    except ImportError as e:
+        if quiet:
+            return ''
         print
-        print name, "Missing module."
+        print name, "Missing module, or import error.", e
+        print
+    except AttributeError as e:
+        if quiet:
+            return ''
+        print
+        print name, "Missing method.", e
         print
 
     return mod
@@ -43,11 +51,16 @@ def load_json(commands):
 
 BASE_ARGS = lazy_import("commands.BASE_ARGS", 'commandsets.base', ['commandsets'])
 BASE_COMMANDS = lazy_import("commands.BASE_COMMANDS", 'commandsets.base', ['commandsets'])
-BASE_COMMANDS_DICT = load_json("{"+BASE_COMMANDS+"}")
+
+BASE_COMMANDS_DICT = load_json("{" + BASE_COMMANDS + "}")
+BASE_COMMANDS_LIST = [c for c in BASE_COMMANDS_DICT]
+
+SUB_BASE_COMMANDS_LIST = [BASE_COMMANDS_DICT[s] for s in BASE_COMMANDS_LIST]
 
 COMMAND_SET = get_active_commandset()
 
 COMMANDS = lazy_import("commands.COMMANDS", COMMAND_SET, ['commandsets'])
+COMMAND_SET_DESCRIPTION = lazy_import("commands.COMMAND_SET_DESCRIPTION", COMMAND_SET, ['commandsets'], quiet=True)
 
 
 def write_config(config):
@@ -72,11 +85,13 @@ def get_cwords():
             curr = ''
 
         return cwords, prev, curr
-    #sys.exit(1)
+    # return 'bla', '', ''
+    # sys.exit(1)
 
 
-def get_pathlist():
-    cwords, prev, current_word = get_cwords()
+def get_pathlist(current_word=None):
+    if not current_word:
+        cwords, prev, current_word = get_cwords()
     path = get_dir_basepath(current_word)
     plist = []
     if current_word and os.path.isdir(path):
@@ -86,6 +101,20 @@ def get_pathlist():
     else:
         plist = get_files(os.getcwd())
     return [p for p in plist if os.path.isdir(p)]
+
+
+def get_setlist():
+    cwords, prev, current_word = get_cwords()
+    if prev == 'commandset':
+        return get_commandsets()
+    return ['']
+
+
+def get_set():
+    cwords, prev, current_word = get_cwords()
+    if prev == 'commandset':
+        return get_active_commandset()
+    return ['']
 
 
 def get_cwd_basename():
@@ -122,10 +151,10 @@ def get_commands():
     ALL_COMMANDS = """
 {
     "arguments": {
-        """+BASE_ARGS+"""
+        """ + BASE_ARGS + """
     },
     "subcommands": {
-        """+BASE_COMMANDS+DIVIDER+COMMANDS+"""
+        """ + BASE_COMMANDS + DIVIDER + COMMANDS + """
     }
 }"""
 

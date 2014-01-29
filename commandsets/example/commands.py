@@ -1,3 +1,4 @@
+COMMAND_SET_DESCRIPTION = 'Commandline bookmarks from hell 2.'
 COMMANDS = """
     "example": {
         "arguments": {

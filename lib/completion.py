@@ -60,7 +60,8 @@ def _order_choices(subcommands, arguments, previous_word):
     choices.extend(_set_subs(unordered_arguments, previous_word))
     choices.extend(subcommands.keys())
 
-    return choices
+    excludes = ['argparse_subparser_args']
+    return [choice for choice in choices if not choice in excludes]
 
 
 def _get_arguments(clist):
