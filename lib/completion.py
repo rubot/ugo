@@ -150,7 +150,12 @@ def _process_subs(arguments, v, k):
     return arguments
 
 
-def _find_subs_and_opts(arguments, cword, current_word):
+def _process_opts(arguments, v, k):
+    del arguments[k]
+    return arguments
+
+
+def _find_subs_and_opts(arguments, cword, current_word, previous_word):
 
     arguments = _subs(arguments)
 
@@ -160,7 +165,15 @@ def _find_subs_and_opts(arguments, cword, current_word):
             if cword in v['substitutes']:
                 arguments = _process_subs(arguments, v, k)
 
-    return _opts(current_word, arguments)
+    arguments = _opts(current_word, arguments)
+
+    # If previous word in options, delete or filter argument
+    for k, v in arguments.items():
+        if 'options' in v:
+            if previous_word in v['options']:
+                arguments = _process_opts(arguments, v, k)
+
+    return arguments
 
 
 def _get_current_choices(clist, cwords, previous_word, current_word):
@@ -174,10 +187,10 @@ def _get_current_choices(clist, cwords, previous_word, current_word):
             del arguments[w]
         elif w in subcommands:
             arguments = _get_arguments(subcommands[w])
-            arguments = _find_subs_and_opts(arguments, w, current_word)
+            arguments = _find_subs_and_opts(arguments, w, current_word, previous_word)
             subcommands = _get_subcommands(subcommands[w])
         else:
-            arguments = _find_subs_and_opts(arguments, w, current_word)
+            arguments = _find_subs_and_opts(arguments, w, current_word, previous_word)
 
     return _order_choices(subcommands, arguments, previous_word)
 

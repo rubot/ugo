@@ -27,9 +27,6 @@ COMMANDS = """
                 "options": {
                     "call": "utils.get_pathlist"
                 }
-            },
-            "no_order": {
-                "groups": "no_order"
             }
         }
 
