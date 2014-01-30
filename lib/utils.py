@@ -100,7 +100,7 @@ def get_pathlist(current_word=None):
         plist = ["%s%s" % (path, f) for f in get_files(path)]
     else:
         plist = get_files(os.getcwd())
-    return [p for p in plist if os.path.isdir(p)]
+    return [p for p in plist if os.path.isdir(p) and not p.startswith('.')]
 
 
 def get_setlist():

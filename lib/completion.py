@@ -72,63 +72,57 @@ def _get_subcommands(clist):
     return clist['subcommands'] if 'subcommands' in clist else {}
 
 
+def _go_and_get_it(value):
+    get_it = None
+    if "path" in value:
+        v = value['path']
+        if hasattr(settings, v):
+            v = getattr(settings, v)
+        if v == '.':
+            get_it = utils.get_pathlist()
+        else:
+            get_it = os.listdir(v)
+    elif "call" in value:
+        v = value['call']
+        func = utils.lazy_import("%s" % v, 'lib', [''])
+        get_it = func()
+    elif "list" in value:
+        v = value['list']
+        get_it = v.replace(' ', '').split(',')
+
+    return get_it
+
+
 def _subs(arguments):
     substitutes = None
 
     for key, value in arguments.items():
         key = str(key)
-        if not 'substitutes' in value:
-            if key == "file":
-                path = value['path']
-                if hasattr(settings, path):
-                    path = getattr(settings, path)
-                substitutes = os.listdir(path)
+        if not key.startswith('-'):
 
-            elif key == "project":
-                substitutes = utils.get_projects()
+            substitutes = _go_and_get_it(value)
 
-        elif isinstance(value['substitutes'], dict):
-            for k, v in value['substitutes'].items():
-                if k == "path":
-                    if hasattr(settings, v):
-                        v = getattr(settings, v)
-                    substitutes = os.listdir(v)
-                elif k == "call":
-                    func = utils.lazy_import("%s" % v, 'lib', [''])
-                    substitutes = func()
-                elif k == "list":
-                    substitutes = v.replace(' ', '').split(',')
-
-        if substitutes:
-            value['substitutes'] = substitutes
-            arguments[key] = value
-            substitutes = None
+            if substitutes:
+                value['substitutes'] = substitutes
+                arguments[key] = value
+                substitutes = None
 
     return arguments
 
 
-def _opts(current_word, arguments):
+def _opts(arguments):
     options = None
 
     for key, value in arguments.items():
         key = str(key)
-        if not 'options' in value:
-            if key == "--path":
-                options = utils.get_pathlist(current_word)
-        elif isinstance(value['options'], dict):
-            for k, v in value['options'].items():
-                if k == "path":
-                    options = utils.get_pathlist(current_word)
-                elif k == "call":
-                    func = utils.lazy_import("%s" % v, 'lib', [''])
-                    options = func()
-                elif k == "list":
-                    options = v.replace(' ', '').split(',')
+        if key.startswith('-'):
 
-        if options:
-            value['options'] = options
-            arguments[key] = value
-            options = None
+            options = _go_and_get_it(value)
+
+            if options:
+                value['options'] = options
+                arguments[key] = value
+                options = None
 
     return arguments
 
@@ -155,7 +149,7 @@ def _process_opts(arguments, v, k):
     return arguments
 
 
-def _find_subs_and_opts(arguments, cword, current_word, previous_word):
+def _find_subs_and_opts(arguments, cword, current_word, previous_word, cwords):
 
     arguments = _subs(arguments)
 
@@ -165,13 +159,15 @@ def _find_subs_and_opts(arguments, cword, current_word, previous_word):
             if cword in v['substitutes']:
                 arguments = _process_subs(arguments, v, k)
 
-    arguments = _opts(current_word, arguments)
+    arguments = _opts(arguments)
 
-    # If previous word in options, delete or filter argument
+    # If previous word in options and option-flag in cwords, delete or filter argument
     for k, v in arguments.items():
         if 'options' in v:
-            if previous_word in v['options']:
-                arguments = _process_opts(arguments, v, k)
+            if k in cwords:
+                index = cwords.index(k)
+                if len(cwords) > index + 1 and cwords[index + 1] in v['options']:
+                    arguments = _process_opts(arguments, v, k)
 
     return arguments
 
@@ -187,10 +183,10 @@ def _get_current_choices(clist, cwords, previous_word, current_word):
             del arguments[w]
         elif w in subcommands:
             arguments = _get_arguments(subcommands[w])
-            arguments = _find_subs_and_opts(arguments, w, current_word, previous_word)
+            arguments = _find_subs_and_opts(arguments, w, current_word, previous_word, cwords)
             subcommands = _get_subcommands(subcommands[w])
         else:
-            arguments = _find_subs_and_opts(arguments, w, current_word, previous_word)
+            arguments = _find_subs_and_opts(arguments, w, current_word, previous_word, cwords)
 
     return _order_choices(subcommands, arguments, previous_word)
 

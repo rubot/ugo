@@ -10,15 +10,11 @@ BASE_COMMANDS = """
     "use": {
         "arguments": {
             "set": {
-                "substitutes": {
-                    "list": "commandset,virtualenv,gemset"
-                },
+                "list": "commandset,virtualenv,gemset",
                 "argparse_argument_args": "help='set a set'"
             },
             "name": {
-                "substitutes": {
-                    "call": "utils.get_setlist"
-                }
+                "call": "utils.get_setlist"
             }
         },
         "argparse_subcommand_args": "help='choose a set to use'"
@@ -26,9 +22,7 @@ BASE_COMMANDS = """
     "which": {
         "arguments": {
             "set": {
-                "substitutes": {
-                    "list": "commandset,virtualenv,gemset"
-                }
+                "list": "commandset,virtualenv,gemset"
             }
         },
         "argparse_subcommand_args": "help='show which set is in use'"

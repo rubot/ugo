@@ -3,15 +3,11 @@ COMMANDS = """
     "boot": {
         "arguments": {
             "file": {
-                "substitutes": {
-                    "argparse_argument_args": "nargs='?'",
-                    "path": "BOOTSCRIPT_PATH"
-                }
+                "path": "BOOTSCRIPT_PATH"
             },
             "project": {
-                "options": {
-                    "argparse_argument_args": "nargs='?'"
-                }
+                "call": "utils.get_projects",
+                "argparse_argument_args": "nargs='?'"
             }
         }
     },
@@ -20,18 +16,26 @@ COMMANDS = """
             "go": {
                 "arguments": {
                     "project": {
+                        "call": "utils.get_projects",
                         "argparse_argument_args": "nargs='?'"
                     }
                 }
             },
             "list": {
-                "argparse_argument_args": "nargs='?'"
+                "arguments": {
+                    "project": {
+                        "list": "la,le,lu",
+                        "argparse_argument_args": "nargs='?'"
+                    }
+                }
             }
         }
     },
     "delete": {
         "arguments": {
-            "project": {},
+            "project": {
+                "call": "utils.get_projects"
+            },
             "--all": {
                 "argparse_argument_args": "action='store_true'",
                 "groups": "no_order"
@@ -40,15 +44,18 @@ COMMANDS = """
     },
     "go": {
         "arguments": {
-            "project": {}
+            "project": {
+                "call": "utils.get_projects"
+            }
         }
     },
     "help": {
-
+        "argparse_subcommand_args": "help='Show ugo help', description='Show ugo help'"
     },
     "info": {
         "arguments": {
             "project": {
+                "call": "utils.get_projects",
                 "argparse_argument_args": "nargs='?'"
             }
         }
@@ -56,6 +63,7 @@ COMMANDS = """
     "list": {
         "arguments": {
             "project": {
+                "call": "utils.get_projects",
                 "argparse_argument_args": "nargs='?'"
             }
         }
@@ -63,23 +71,28 @@ COMMANDS = """
     "make": {
         "arguments": {
             "name": {
-                "substitutes": {
-                    "call": "utils.get_possible_project_names"
-                }
+                "call": "utils.get_possible_project_names"
             },
-            "--path": {}
+            "--path": {
+                "path": "."
+            }
 
         }
     },
     "set": {
         "arguments": {
-            "project": {},
-            "--path": {}
+            "project": {
+                "call": "utils.get_projects"
+            },
+            "--path": {
+                "path": "."
+            }
         }
     },
     "tag": {
         "arguments": {
             "project": {
+                "call": "utils.get_projects",
                 "groups": "endless",
                 "filter": "by_tag"
             }
