@@ -1,7 +1,9 @@
+import sys
+
 import patched_argparse as argparse
 
-from commandsets.base.utils import lazy_import, get_commands, get_active_commandset, get_active_commands_description
-from commandsets.base import settings as base_settings
+from commandsets.base.utils import lazy_import, get_commands, get_active_commandset, \
+    get_active_commands_description, get_commandsets
 
 
 def _load_module(mname, sub, path):
@@ -61,13 +63,17 @@ def _add_subcommands(cdict, parent, parser):
 
 def execute_from_command_line():
 
+    has_commandset_arg = map(lambda x: x in ['-c', '--commandset'], sys.argv)
+
+    if any(has_commandset_arg):
+        CS = sys.argv[has_commandset_arg.index(True) + 1]
+        if CS in get_commandsets():
+            print get_active_commandset(CS)
+
     parser = argparse.ArgumentParser(description='%s' % get_active_commands_description())
 
     _add_subcommands(get_commands(), None, parser)
 
     parser_args = parser.parse_args()
-
-    if parser_args.commandset:
-        base_settings.COMMANDLINE_COMMAND_SET = parser_args.commandset
 
     parser_args.func(parser_args)

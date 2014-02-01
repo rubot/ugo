@@ -9,12 +9,18 @@ from commandsets.base import settings as base_settings
 from commandsets.base import commands
 
 
-def get_active_commandset():
+def get_active_commandset(override=None):
     """Get active commandset module path from session file.
     Returns string
     """
-    if hasattr(get_active_commandset, 'ACTIVE_COMMANDSET'):
-        return 'commandsets.%s' % get_active_commandset.ACTIVE_COMMANDSET
+
+    this = get_active_commandset
+
+    if override:
+        this.ACTIVE_COMMANDSET = override
+
+    if hasattr(this, 'ACTIVE_COMMANDSET'):
+        return 'commandsets.%s' % this.ACTIVE_COMMANDSET
 
     config = ConfigParser.ConfigParser()
 
@@ -22,7 +28,7 @@ def get_active_commandset():
         CS = config.get('SESSION', 'COMMAND_SET')
 
         if CS:
-            get_active_commandset.ACTIVE_COMMANDSET = CS
+            this.ACTIVE_COMMANDSET = CS
             return 'commandsets.%s' % CS
 
     return 'commandsets.%s' % base_settings.DEFAULT_COMMAND_SET
