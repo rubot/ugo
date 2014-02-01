@@ -10,7 +10,7 @@ def _load_module(mname, sub, path):
     return lazy_import("ugo_%s.ugo_%s" % (mname, sub), path, ['commandsets'])
 
 
-def _add_subcommands(cdict, parent, parser):
+def _add_subcommands_and_arguments(cdict, parent, parser):
 
     for _type in cdict:
         if _type == 'arguments':
@@ -58,21 +58,21 @@ def _add_subcommands(cdict, parent, parser):
 
                 subcommands[sub].set_defaults(func=func)
 
-                _add_subcommands(cdict[_type][sub], mname, subcommands[sub])
+                _add_subcommands_and_arguments(cdict[_type][sub], mname, subcommands[sub])
 
 
 def execute_from_command_line():
 
+    # Catch set commandset on commandline before invoking parser. Status: workaround
     has_commandset_arg = map(lambda x: x in ['-c', '--commandset'], sys.argv)
-
     if any(has_commandset_arg):
         CS = sys.argv[has_commandset_arg.index(True) + 1]
         if CS in get_commandsets():
-            print get_active_commandset(CS)
+            get_active_commandset(CS)
 
     parser = argparse.ArgumentParser(description='%s' % get_active_commands_description())
 
-    _add_subcommands(get_commands(), None, parser)
+    _add_subcommands_and_arguments(get_commands(), None, parser)
 
     parser_args = parser.parse_args()
 
