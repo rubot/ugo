@@ -1,6 +1,6 @@
 import os
 
-from lib.utils import get_cwd_basename
+from commandsets.base.utils import get_cwd_basename
 
 
 def ugo_make(args):
@@ -17,4 +17,3 @@ def ugo_make(args):
         else:
             print "nopedir"
             # mkdir. Make project
-

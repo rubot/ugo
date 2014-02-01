@@ -1,6 +1,7 @@
 import patched_argparse as argparse
 
-from lib.utils import COMMAND_SET, COMMAND_SET_DESCRIPTION, lazy_import, get_commands, SUB_BASE_COMMANDS_LIST, BASE_COMMANDS_LIST
+from commandsets.base.utils import lazy_import, get_commands, get_active_commandset, get_active_commands_description
+from commandsets.base import settings as base_settings
 
 
 def _load_module(mname, sub, path):
@@ -36,7 +37,7 @@ def _add_subcommands(cdict, parent, parser):
 
             # Patched pythons argparse in lib, because of http://bugs.python.org/issue9351
             for sub in sorted(cdict[_type]):
-                if sub == 'argparse_subparser_args':
+                if sub in ['argparse_subparser_args']:
                     continue
                 mname = parent if parent else sub
 
@@ -48,12 +49,10 @@ def _add_subcommands(cdict, parent, parser):
 
                 subcommands[sub] = eval("subparsers.add_parser(%s)" % parser_args)
 
-                # print sname, mname, sub, [sc for sc in SUB_BASE_COMMANDS_LIST if 'subcommands' in sc and sub in sc['subcommands'].keys()]
-                # check for base_commands have subcommands
-                if sub in BASE_COMMANDS_LIST or [sc for sc in SUB_BASE_COMMANDS_LIST if _type in sc and sub in sc[_type].keys()]:
+                if "base_command" in cdict[_type][sub].keys():
                     func = _load_module(mname, sub, 'commandsets.base')
                 else:
-                    func = _load_module(mname, sub, COMMAND_SET)
+                    func = _load_module(mname, sub, get_active_commandset())
 
                 subcommands[sub].set_defaults(func=func)
 
@@ -62,10 +61,13 @@ def _add_subcommands(cdict, parent, parser):
 
 def execute_from_command_line():
 
-    parser = argparse.ArgumentParser(description='%s' % COMMAND_SET_DESCRIPTION)
+    parser = argparse.ArgumentParser(description='%s' % get_active_commands_description())
 
     _add_subcommands(get_commands(), None, parser)
 
     parser_args = parser.parse_args()
+
+    if parser_args.commandset:
+        base_settings.COMMANDLINE_COMMAND_SET = parser_args.commandset
 
     parser_args.func(parser_args)

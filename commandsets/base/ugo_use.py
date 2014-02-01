@@ -1,5 +1,6 @@
-from lib.utils import write_config
 import ConfigParser
+
+from commandsets.base.utils import write_config
 
 
 def ugo_use(args):

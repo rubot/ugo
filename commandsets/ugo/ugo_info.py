@@ -1,5 +1,5 @@
-from commands import COMMANDS
+from commandsets.base.utils import get_commands
 
 
 def ugo_info(args):
-    print COMMANDS
+    print get_commands()

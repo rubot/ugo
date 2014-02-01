@@ -6,7 +6,7 @@ COMMANDS = """
                 "path": "BOOTSCRIPT_PATH"
             },
             "project": {
-                "call": "utils.get_projects",
+                "call": "get_projects",
                 "argparse_argument_args": "nargs='?'"
             }
         }
@@ -16,7 +16,7 @@ COMMANDS = """
             "go": {
                 "arguments": {
                     "project": {
-                        "call": "utils.get_projects",
+                        "call": "get_projects",
                         "argparse_argument_args": "nargs='?'"
                     }
                 }
@@ -34,7 +34,7 @@ COMMANDS = """
     "delete": {
         "arguments": {
             "project": {
-                "call": "utils.get_projects"
+                "call": "get_projects"
             },
             "--all": {
                 "argparse_argument_args": "action='store_true'",
@@ -45,7 +45,7 @@ COMMANDS = """
     "go": {
         "arguments": {
             "project": {
-                "call": "utils.get_projects"
+                "call": "get_projects"
             }
         }
     },
@@ -55,7 +55,7 @@ COMMANDS = """
     "info": {
         "arguments": {
             "project": {
-                "call": "utils.get_projects",
+                "call": "get_projects",
                 "argparse_argument_args": "nargs='?'"
             }
         }
@@ -63,7 +63,7 @@ COMMANDS = """
     "list": {
         "arguments": {
             "project": {
-                "call": "utils.get_projects",
+                "call": "get_projects",
                 "argparse_argument_args": "nargs='?'"
             }
         }
@@ -71,7 +71,7 @@ COMMANDS = """
     "make": {
         "arguments": {
             "name": {
-                "call": "utils.get_possible_project_names"
+                "call": "get_possible_project_names"
             },
             "--path": {
                 "path": "."
@@ -82,7 +82,7 @@ COMMANDS = """
     "set": {
         "arguments": {
             "project": {
-                "call": "utils.get_projects"
+                "call": "get_projects"
             },
             "--path": {
                 "path": "."
@@ -92,7 +92,7 @@ COMMANDS = """
     "tag": {
         "arguments": {
             "project": {
-                "call": "utils.get_projects",
+                "call": "get_projects",
                 "groups": "endless",
                 "filter": "by_tag"
             }

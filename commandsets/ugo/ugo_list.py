@@ -1,6 +1,6 @@
-from lib.utils import list_files, list_projects
-
-from settings import UGO_PATH
+from commandsets.base.utils import list_files
+from commandsets.base.settings import UGO_PATH
+from commandsets.ugo.utils import list_projects
 
 
 def ugo_list(args):

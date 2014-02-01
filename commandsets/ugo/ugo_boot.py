@@ -1,7 +1,7 @@
 import subprocess
 
-from settings import BOOTSCRIPT_PATH
-from lib.utils import list_files
+from commandsets.base.settings import BOOTSCRIPT_PATH
+from commandsets.base.utils import list_files
 
 
 # Executes script

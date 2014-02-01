@@ -7,10 +7,10 @@ COMMANDS = """
             },
             "door": {
                 "list": "1, 2, 3",
-                "argparse_argument_args": "type=int, choices=range(1, 4)"
+                "argparse_argument_args": "type=int, choices=range(1, 4), nargs='?'"
             },
             "path_settings": {
-                "list": "4,5,6"
+                "path": "BLA"
             },
             "path_system": {
                 "list": "7,8,9"
