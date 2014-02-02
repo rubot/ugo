@@ -30,6 +30,7 @@ def _add_subcommands_and_arguments(cdict, parent, parser):
             argparse_subparser_args = ""
             if 'argparse_subparser_args' in cdict[_type]:
                 argparse_subparser_args = cdict[_type]['argparse_subparser_args']
+
             subparser_args = "title='%(sname)s subcommands', dest='%(sname)s_command', %(subparser_args)s" % {
                 'sname': sname,
                 'subparser_args': argparse_subparser_args
@@ -37,7 +38,6 @@ def _add_subcommands_and_arguments(cdict, parent, parser):
 
             subparsers = eval("parser.add_subparsers(%s)" % subparser_args)
 
-            # Patched pythons argparse in lib, because of http://bugs.python.org/issue9351
             for sub in sorted(cdict[_type]):
                 if sub in ['argparse_subparser_args']:
                     continue
@@ -70,6 +70,7 @@ def execute_from_command_line():
         if CS in get_commandsets():
             get_active_commandset(CS)
 
+    # Patched pythons argparse in lib, because of http://bugs.python.org/issue9351
     parser = argparse.ArgumentParser(description='%s' % get_active_commands_description())
 
     _add_subcommands_and_arguments(get_commands(), None, parser)

@@ -105,36 +105,18 @@ def _go_and_get_it(value, base_command):
     return get_it
 
 
-def _subs(arguments, base_command):
-    substitutes = None
+def _subsopts(arguments, base_command):
+    subsopts = None
 
     for key, value in arguments.items():
         key = str(key)
-        if not key.startswith('-'):
+        subsopts = _go_and_get_it(value, base_command)
 
-            substitutes = _go_and_get_it(value, base_command)
-
-            if substitutes:
-                value['substitutes'] = substitutes
-                arguments[key] = value
-                substitutes = None
-
-    return arguments
-
-
-def _opts(arguments, base_command):
-    options = None
-
-    for key, value in arguments.items():
-        key = str(key)
-        if key.startswith('-'):
-
-            options = _go_and_get_it(value, base_command)
-
-            if options:
-                value['options'] = options
-                arguments[key] = value
-                options = None
+        if subsopts:
+            _type = 'options' if key.startswith('-') else 'substitutes'
+            value[_type] = subsopts
+            arguments[key] = value
+            subsopts = None
 
     return arguments
 
@@ -161,21 +143,18 @@ def _process_opts(arguments, v, k):
     return arguments
 
 
-def _find_subs_and_opts(arguments, cword, current_word, previous_word, cwords, base_command=False):
+def _find_subs_and_opts(arguments, cword, cwords, base_command=False):
 
-    arguments = _subs(arguments, base_command)
+    arguments = _subsopts(arguments, base_command)
 
-    # If current word in substitutes, delete or filter argument
     for k, v in arguments.items():
+        # If current word in substitutes, delete or filter argument
         if 'substitutes' in v:
             if cword in v['substitutes']:
                 arguments = _process_subs(arguments, v, k)
 
-    arguments = _opts(arguments, base_command)
-
-    # If previous word in options and option-flag in cwords, delete or filter argument
-    for k, v in arguments.items():
-        if 'options' in v:
+        # If previous word in options and option-flag in cwords, delete or filter argument
+        elif 'options' in v:
             if k in cwords:
                 index = cwords.index(k)
                 if len(cwords) > index + 1 and cwords[index + 1] in v['options']:
@@ -197,12 +176,12 @@ def _get_current_choices(clist, cwords, previous_word, current_word):
         elif w in subcommands:
             arguments = _get_arguments(subcommands[w])
             base_command = True if 'base_command' in subcommands[w] else False
-            arguments = _find_subs_and_opts(arguments, w, current_word, previous_word, cwords, base_command=base_command)
+            arguments = _find_subs_and_opts(arguments, w, cwords, base_command)
             subcommands = _get_subcommands(subcommands[w])
         else:
-            arguments = _find_subs_and_opts(arguments, w, current_word, previous_word, cwords, base_command=base_command)
+            arguments = _find_subs_and_opts(arguments, w, cwords, base_command)
 
-    return _order_choices(subcommands, arguments, previous_word, base_command=base_command)
+    return _order_choices(subcommands, arguments, previous_word, base_command)
 
 
 def autocomplete():

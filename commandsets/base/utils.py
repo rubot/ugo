@@ -68,6 +68,11 @@ def get_active_commands():
 
 def get_commands():
     """Return json of all commands. Base and active commandset combined"""
+
+    # Probably not necessary
+    if hasattr(get_commands, 'commands'):
+        return get_commands.commands
+
     BASE_ARGS = commands.BASE_ARGS
     BASE_COMMANDS = commands.BASE_COMMANDS
 
@@ -84,7 +89,8 @@ def get_commands():
     }
 }"""
 
-    return load_json(ALL_COMMANDS)
+    get_commands.commands = load_json(ALL_COMMANDS)
+    return get_commands.commands
 
 
 def get_setlist():
