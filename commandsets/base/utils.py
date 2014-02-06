@@ -44,6 +44,26 @@ def get_active_commands_module():
     return get_active_commands_module.commands
 
 
+def get_active_settings_module():
+    """Get active commandsets settings module.
+    Returns module
+    """
+    if hasattr(get_active_settings_module, 'settings'):
+        return get_active_settings_module.settings
+    get_active_settings_module.settings = lazy_import("settings", get_active_commandset(), ['commandsets'])
+    return get_active_settings_module.settings
+
+
+def get_active_utils_module():
+    """Get active commandsets utils module.
+    Returns module
+    """
+    if hasattr(get_active_utils_module, 'utils'):
+        return get_active_utils_module.utils
+    get_active_utils_module.utils = lazy_import("utils", get_active_commandset(), ['commandsets'])
+    return get_active_utils_module.utils
+
+
 def get_active_commands_description():
     """Get active commandsets description.
     Returns string
@@ -67,9 +87,10 @@ def get_active_commands():
 
 
 def get_commands():
-    """Return json of all commands. Base and active commandset combined"""
-
-    # Probably not necessary
+    """Base and active commandset combined.
+    Returns OrderedDict
+    """
+    # Probably not necessary, because used only once
     if hasattr(get_commands, 'commands'):
         return get_commands.commands
 

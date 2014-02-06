@@ -1,8 +1,7 @@
 import os
 import sys
 
-from commandsets.base import utils
-from commandsets.base import settings
+from commandsets.base import utils, settings
 
 
 def _check_group(group, attributes):
@@ -75,14 +74,13 @@ def _get_subcommands(clist):
 
 def _go_and_get_it(value, base_command):
     get_it = None
-    COMMAND_SET = utils.get_active_commandset()
 
     if base_command:
         _settings = settings
         _utils = utils
     else:
-        _settings = utils.lazy_import('settings', "%s" % COMMAND_SET, COMMAND_SET, ['commandsets'])
-        _utils = utils.lazy_import('utils', "%s" % COMMAND_SET, COMMAND_SET, ['commandsets'])
+        _settings = utils.get_active_settings_module()
+        _utils = utils.get_active_utils_module()
 
     if "path" in value:
         v = value['path']
@@ -109,7 +107,7 @@ def _subsopts(arguments, base_command):
     subsopts = None
 
     for key, value in arguments.items():
-        key = str(key)
+        # key = str(key)
         subsopts = _go_and_get_it(value, base_command)
 
         if subsopts:

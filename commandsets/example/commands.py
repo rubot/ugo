@@ -3,7 +3,7 @@ COMMANDS = """
     "example": {
         "arguments": {
             "list": {
-                "list": "gu,fa, fub, nargs='?'"
+                "list": "gu,fa, fub"
             },
             "door": {
                 "list": "1, 2, 3",
@@ -21,9 +21,7 @@ COMMANDS = """
                 "groups": "no_order",
                 "argparse_argument_args": "type=int, choices=range(10,13)"
             }
-        }
-    },
-    "example2": {
+        },
         "subcommands": {
             "gimmepath": {
                 "arguments": {

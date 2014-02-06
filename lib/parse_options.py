@@ -3,7 +3,7 @@ import sys
 import patched_argparse as argparse
 
 from commandsets.base.utils import lazy_import, get_commands, get_active_commandset, \
-    get_active_commands_description, get_commandsets
+    get_active_commands_description, get_commandsets  # , get_active_settings_module
 
 
 def _load_module(mname, sub, path):
@@ -69,6 +69,12 @@ def execute_from_command_line():
         CS = sys.argv[has_commandset_arg.index(True) + 1]
         if CS in get_commandsets():
             get_active_commandset(CS)
+
+    # has_any_positional_command = map(lambda x: not x.startswith('-'), sys.argv[1:])
+    # if not any(has_any_positional_command):
+    #     s = get_active_settings_module()
+    #     if hasattr(s, 'DEFAULT_SUBCOMMAND'):
+    #         sys.argv.append(s.DEFAULT_SUBCOMMAND)
 
     # Patched pythons argparse in lib, because of http://bugs.python.org/issue9351
     parser = argparse.ArgumentParser(description='%s' % get_active_commands_description())

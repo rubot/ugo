@@ -2,8 +2,7 @@
 
 import os
 
-from lib import completion
-from lib import parse_options
+from lib import completion, parse_options
 
 
 if __name__ == "__main__":

@@ -11,4 +11,3 @@ UGO_PROFILE = ".profile"
 CONFIG_FILE = "%s/.session.ini" % UGO_PATH
 
 DEFAULT_COMMAND_SET = "ugo"
-COMMANDLINE_COMMAND_SET = None
