@@ -25,7 +25,7 @@
 [[ -d "$UGO_HOME/$UGO_CONFDIR" ]] || mkdir -p "$UGO_HOME/$UGO_CONFDIR"
 [[ -d "$UGO_TRASH" ]] || mkdir -p "$UGO_TRASH"
 
-UGO_COMMANDS=(boot conf help info list make delete set sh)
+UGO_COMMANDS=(boot conf help info list make delete set)
 UGO_DEBUG=0
 
 _ugo_help(){
@@ -49,13 +49,13 @@ hooks:
 $UGO_HOME/$UGO_CONFDIR/
  pre-make-hook
  post-make-hook
- pre-ugo-hook
- post-ugo-hook
+ pre-ugo-hook : Replaced by gg .startup
+ post-ugo-hook : Replaced by gg .startup
 
 --per project--
 $UGO_HOME/<project>/
- pre-ugo-hook
- post-ugo-hook
+ pre-ugo-hook : Replaced by gg .startup
+ post-ugo-hook : Replaced by gg .startup
  pre-delete-hook [only with delete --all]
  post-delete-hook [only with delete --all]
 
@@ -454,13 +454,15 @@ _ugo_ugo(){
         return
     fi
 
-    _ugo_run_hook $project 'pre-ugo-hook'
-    _ugo_run_hook "$UGO_CONFDIR" 'pre-ugo-hook' $project
-
+    # _ugo_run_hook $project 'pre-ugo-hook'
+    # _ugo_run_hook "$UGO_CONFDIR" 'pre-ugo-hook' $project
+    [[ $UGO_DEBUG == 1 ]] && echo $project_dir
     cd "$project_dir"
-
-    _ugo_run_hook $project 'post-ugo-hook'
-    _ugo_run_hook "$UGO_CONFDIR" 'post-ugo-hook' $project
+    # Requires installed gg command
+    #[[ $(type gg) ]] &> /dev/null && gg -s
+    [[ $(type gg) ]] &> /dev/null && gg -c
+    # _ugo_run_hook $project 'post-ugo-hook'
+    # _ugo_run_hook "$UGO_CONFDIR" 'post-ugo-hook' $project
 }
 
 ugo(){
@@ -501,8 +503,7 @@ ugo(){
         if [[ $i == "$cmd" ]]
             then
             cmd="_ugo_$cmd $args"
-            echo "<$cmd>"
-            echo
+            [[ $UGO_DEBUG == 1 ]] && echo $cmd
             $cmd
             return
         fi
@@ -520,8 +521,8 @@ ugo(){
     #default is ugo
     cmd="_ugo_ugo $cmd"
     [[ $args != "" ]] && cmd+=" $args"
-    echo "<$cmd>"
-    echo
+
+    [[ $UGO_DEBUG == 1 ]] && echo $cmd
     $cmd
 }
 

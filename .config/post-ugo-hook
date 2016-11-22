@@ -1,5 +1,0 @@
-
-# Activate virtualenv, if one exists with the current projects name
-
-has_venv=$(find $WORKON_HOME -d 1 -type d -name $1)
-[[ $has_venv ]] && [[ $VIRTUAL_ENV ]] && [[ $VIRTUAL_ENV != "$1" ]] && deactivate && workon $1
